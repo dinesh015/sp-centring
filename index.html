@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SP Centring Works - Secure Portal</title>
+    <title>SP Centring Works - Complete Management Portal</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- jsPDF & autoTable -->
@@ -12,18 +12,17 @@
     <!-- FontAwesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-100 min-h-screen text-slate-800 font-sans pb-12">
+<body class="bg-slate-100 min-h-screen text-slate-800 font-sans flex flex-col">
 
     <!-- Auth Container (Login / Signup Screen) -->
     <div id="authScreen" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-slate-200">
-            
             <div class="text-center mb-6">
                 <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-indigo-100 text-indigo-700 text-xl font-bold mb-2">
                     <i class="fa-solid fa-building-shield"></i>
                 </div>
                 <h2 class="text-xl font-bold text-slate-800">SP CENTRING WORKS</h2>
-                <p class="text-xs text-slate-500 mt-1">Authorized Access Portal (Max 5 Registered Users)</p>
+                <p class="text-xs text-slate-500 mt-1">Authorized Access Portal (Max 5 Registered Users)[cite: 1]</p>
             </div>
 
             <!-- Login / Signup Toggle Tabs -->
@@ -66,176 +65,367 @@
             </form>
 
             <div class="mt-4 pt-3 border-t text-center text-[11px] text-slate-400">
-                Registered Emails Count: <span id="registeredCountDisplay" class="font-bold text-slate-700">0</span> / 5 allowed
+                Registered Emails Count: <span id="registeredCountDisplay" class="font-bold text-slate-700">0</span> / 5 allowed[cite: 1]
             </div>
         </div>
     </div>
 
-    <!-- Application Body (Accessible after login) -->
-    <div id="appBody" class="hidden">
-        <!-- Header -->
-        <header class="bg-indigo-700 text-white py-5 shadow-md mb-6">
-            <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
-                <div>
-                    <h1 class="text-2xl font-bold tracking-wide">SP CENTRING WORKS</h1>
-                    <p class="text-indigo-200 text-xs">Daily Entry, Attendance, SMS Alerts & Activity Audit</p>
-                </div>
-                <div class="flex items-center gap-2">
-                    <span id="userBadge" class="bg-indigo-800 text-indigo-100 px-3 py-1.5 rounded-lg text-xs font-semibold border border-indigo-500 flex items-center gap-1.5">
-                        <i class="fa-solid fa-user-check text-emerald-400"></i> <span id="currentUserEmail">user@sp.com</span>
-                    </span>
-                    <button onclick="openAuditModal()" class="bg-indigo-800 hover:bg-indigo-900 text-white font-medium py-2 px-3 rounded-lg shadow transition text-xs flex items-center gap-1.5 border border-indigo-500">
-                        <i class="fa-solid fa-clock-rotate-left text-amber-400"></i> Audit Logs
-                    </button>
-                    <button onclick="exportToPDF()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-2 px-3 rounded-lg shadow transition text-xs flex items-center gap-1.5">
-                        <i class="fa-solid fa-file-pdf"></i> PDF
-                    </button>
-                    <button onclick="handleLogout()" class="bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-3 rounded-lg shadow transition text-xs flex items-center gap-1.5">
-                        <i class="fa-solid fa-right-from-bracket"></i> Logout
-                    </button>
-                </div>
-            </div>
-        </header>
+    <!-- Application Body -->
+    <div id="appBody" class="hidden flex-1 flex flex-col md:flex-row">
 
-        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-            <!-- Entry Form Section -->
-            <div class="lg:col-span-1 bg-white p-5 rounded-xl shadow-sm border border-slate-200 h-fit">
-                <h2 id="formTitle" class="text-base font-bold text-slate-700 mb-3 border-b pb-2 flex items-center justify-between">
-                    <span><i class="fa-solid fa-plus-circle text-indigo-600 mr-2"></i>Add Worker Entry</span>
-                    <button id="cancelEditBtn" onclick="resetForm()" class="hidden text-xs text-red-500 hover:underline">Cancel Edit</button>
-                </h2>
-
-                <form id="entryForm" onsubmit="handleFormSubmit(event)" class="space-y-3 text-xs">
-                    <input type="hidden" id="editIndex" value="-1">
-
+        <!-- Sidebar Section -->
+        <aside id="sidebar" class="w-full md:w-80 bg-slate-900 text-slate-200 p-5 flex flex-col justify-between shrink-0 shadow-lg">
+            <div class="space-y-6">
+                <!-- App Title -->
+                <div class="border-b border-slate-700 pb-4 flex justify-between items-center">
                     <div>
-                        <label class="block font-semibold uppercase text-slate-500 mb-1">Site Name</label>
-                        <input type="text" id="siteName" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="e.g. Site A - Anna Nagar">
+                        <h1 class="text-lg font-bold tracking-wide text-white">SP CENTRING</h1>
+                        <p class="text-indigo-400 text-[11px]">Management & Audit Portal</p>
                     </div>
+                    <span id="userBadge" class="bg-indigo-900 text-indigo-200 px-2 py-1 rounded text-[10px] border border-indigo-700">
+                        <i class="fa-solid fa-user text-emerald-400"></i> <span id="currentUserEmail">user</span>
+                    </span>
+                </div>
 
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block font-semibold uppercase text-slate-500 mb-1">Worker Name</label>
-                            <input type="text" id="name" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Worker Name">
-                        </div>
-                        <div>
-                            <label class="block font-semibold uppercase text-slate-500 mb-1">Phone Number</label>
-                            <input type="tel" id="phone" pattern="[0-9]{10}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="10-digit Mobile">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block font-semibold uppercase text-slate-500 mb-1">Date</label>
-                            <input type="date" id="date" required onchange="autoFillDay()" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block font-semibold uppercase text-slate-500 mb-1">Day</label>
-                            <input type="text" id="day" readonly class="w-full px-3 py-2 border bg-slate-50 text-slate-500 rounded-lg" placeholder="Day">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block font-semibold uppercase text-slate-500 mb-1">Time Starts</label>
-                            <input type="time" id="timeStart" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block font-semibold uppercase text-slate-500 mb-1">Time Out</label>
-                            <input type="time" id="timeOut" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block font-semibold uppercase text-slate-500 mb-1">Pending (₹)</label>
-                            <input type="number" id="pending" min="0" step="any" placeholder="0" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
-                        </div>
-                        <div>
-                            <label class="block font-semibold uppercase text-slate-500 mb-1">Paid (₹)</label>
-                            <input type="number" id="paid" min="0" step="any" placeholder="0" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
-                        </div>
-                    </div>
-
-                    <button type="submit" id="submitBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg shadow transition text-xs">
-                        Save Entry
+                <!-- Navigation Module Switcher -->
+                <div class="space-y-2">
+                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider">Select Module</label>
+                    <button id="navWorkerBtn" onclick="switchModule('worker')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold bg-indigo-600 text-white flex items-center justify-between">
+                        <span><i class="fa-solid fa-users mr-2"></i>Worker Attendance</span>
+                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
                     </button>
-                </form>
+                    <button id="navCentringBtn" onclick="switchModule('centring')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 flex items-center justify-between">
+                        <span><i class="fa-solid fa-ruler-combined mr-2"></i>Centring Work Measures</span>
+                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </button>
+                </div>
+
+                <!-- User Specific Filter -->
+                <div class="bg-slate-800 p-3.5 rounded-xl border border-slate-700 space-y-3">
+                    <h3 class="text-xs font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-user-gear"></i> Filter By User / Site
+                    </h3>
+                    <div>
+                        <label class="block text-[11px] text-slate-400 mb-1">Select Specific Worker/Site:</label>
+                        <select id="userSelectFilter" onchange="applyUserFilter(this.value)" class="w-full px-2.5 py-1.5 bg-slate-900 text-xs border border-slate-700 rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none">
+                            <option value="">-- All Records --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Data Export & Import Section -->
+                <div class="bg-slate-800 p-3.5 rounded-xl border border-slate-700 space-y-3">
+                    <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-file-export"></i> Import & Export Data
+                    </h3>
+                    <p class="text-[11px] text-slate-400">Export current table data or upload existing file to update records.</p>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="exportToPDF()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-2 rounded-lg text-[11px] transition flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-file-pdf"></i> Export PDF
+                        </button>
+                        <button onclick="exportToCSV()" class="bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-2 rounded-lg text-[11px] transition flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-file-csv"></i> Export CSV
+                        </button>
+                    </div>
+                    <div class="pt-1">
+                        <label class="w-full bg-slate-700 hover:bg-slate-600 text-slate-200 text-center border border-slate-600 py-1.5 px-2 rounded-lg text-[11px] cursor-pointer block transition">
+                            <i class="fa-solid fa-file-import mr-1"></i> Import CSV File
+                            <input type="file" id="csvFileInput" accept=".csv" onchange="importCSVFile(event)" class="hidden">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- History Audit Action -->
+                <div>
+                    <button onclick="openAuditModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 py-2 px-3 rounded-lg text-xs transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-amber-400"></i> View Audit Logs
+                    </button>
+                </div>
             </div>
 
-            <!-- Data Display & Filter Section -->
-            <div class="lg:col-span-2 space-y-4">
-                <!-- Filters Card -->
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                    <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center justify-between">
-                        <span><i class="fa-solid fa-filter text-indigo-600 mr-1.5"></i> Filters (Range / Site / Worker)</span>
-                        <button onclick="resetFilters()" class="text-indigo-600 hover:underline font-normal text-xs">Reset Filters</button>
-                    </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs">
+            <!-- Sidebar Footer -->
+            <div class="pt-6 border-t border-slate-800">
+                <button onclick="handleLogout()" class="w-full bg-red-600/20 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/30 py-2 px-3 rounded-lg text-xs transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout Session
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Workspace Area -->
+        <main class="flex-1 p-4 md:p-6 space-y-6 overflow-y-auto">
+
+            <!-- MODULE 1: Worker Attendance & Payment Portal -->
+            <div id="moduleWorker" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Entry Form -->
+                <div class="lg:col-span-1 bg-white p-5 rounded-xl shadow-sm border border-slate-200 h-fit">
+                    <h2 id="workerFormTitle" class="text-base font-bold text-slate-700 mb-3 border-b pb-2 flex items-center justify-between">
+                        <span><i class="fa-solid fa-plus-circle text-indigo-600 mr-2"></i>Add Worker Entry</span>
+                        <button id="cancelWorkerEditBtn" onclick="resetWorkerForm()" class="hidden text-xs text-red-500 hover:underline">Cancel Edit</button>
+                    </h2>
+
+                    <form id="workerForm" onsubmit="handleWorkerSubmit(event)" class="space-y-3 text-xs">
+                        <input type="hidden" id="workerEditIndex" value="-1">
+
                         <div>
-                            <label class="block text-slate-500 mb-0.5">From Date</label>
-                            <input type="date" id="fromDate" onchange="renderTable()" class="w-full px-2.5 py-1 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                            <label class="block font-semibold uppercase text-slate-500 mb-1">Site Name</label>
+                            <input type="text" id="workerSiteName" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="e.g. Site A - Anna Nagar">
                         </div>
-                        <div>
-                            <label class="block text-slate-500 mb-0.5">To Date</label>
-                            <input type="date" id="toDate" onchange="renderTable()" class="w-full px-2.5 py-1 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-semibold uppercase text-slate-500 mb-1">Worker Name</label>
+                                <input type="text" id="workerName" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="Worker Name">
+                            </div>
+                            <div>
+                                <label class="block font-semibold uppercase text-slate-500 mb-1">Phone Number</label>
+                                <input type="tel" id="workerPhone" pattern="[0-9]{10}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="10-digit Mobile">
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-slate-500 mb-0.5">Site Name</label>
-                            <input type="text" id="siteFilter" oninput="renderTable()" placeholder="Site..." class="w-full px-2.5 py-1 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-semibold uppercase text-slate-500 mb-1">Category / Role</label>
+                                <select id="workerCategory" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
+                                    <option value="Centring Worker">Centring Worker</option>
+                                    <option value="Mason">Mason</option>
+                                    <option value="Carpenter">Carpenter</option>
+                                    <option value="Helper">Helper</option>
+                                    <option value="Supervisor">Supervisor</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-semibold uppercase text-slate-500 mb-1">Work Shift</label>
+                                <select id="workerShift" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white">
+                                    <option value="Full Day">Full Day</option>
+                                    <option value="Half Day">Half Day</option>
+                                    <option value="Overtime">Overtime</option>
+                                </select>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-slate-500 mb-0.5">Worker Name</label>
-                            <input type="text" id="searchInput" oninput="renderTable()" placeholder="Worker..." class="w-full px-2.5 py-1 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-semibold uppercase text-slate-500 mb-1">Date</label>
+                                <input type="date" id="workerDate" required onchange="autoFillDay()" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block font-semibold uppercase text-slate-500 mb-1">Day</label>
+                                <input type="text" id="workerDay" readonly class="w-full px-3 py-2 border bg-slate-50 text-slate-500 rounded-lg" placeholder="Day">
+                            </div>
                         </div>
-                    </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-semibold uppercase text-slate-500 mb-1">Time Starts</label>
+                                <input type="time" id="workerTimeStart" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block font-semibold uppercase text-slate-500 mb-1">Time Out</label>
+                                <input type="time" id="workerTimeOut" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-semibold uppercase text-slate-500 mb-1">Pending (₹)</label>
+                                <input type="number" id="workerPending" min="0" step="any" placeholder="0" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block font-semibold uppercase text-slate-500 mb-1">Paid (₹)</label>
+                                <input type="number" id="workerPaid" min="0" step="any" placeholder="0" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                        </div>
+
+                        <button type="submit" id="workerSubmitBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg shadow transition text-xs">
+                            Save Entry
+                        </button>
+                    </form>
                 </div>
 
                 <!-- Table Card -->
-                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-                    <div class="flex items-center justify-between pb-3 border-b mb-3">
-                        <h2 class="text-base font-bold text-slate-700"><i class="fa-solid fa-list-check text-indigo-600 mr-2"></i>Daily Log Records</h2>
-                        <button onclick="clearAllData()" class="text-xs text-red-600 hover:bg-red-50 px-2.5 py-1 rounded border border-red-200" title="Clear All Data">
-                            <i class="fa-solid fa-trash-can mr-1"></i> Clear All
-                        </button>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse text-xs">
-                            <thead>
-                                <tr class="bg-slate-100 text-slate-600 font-semibold border-b">
-                                    <th class="p-2">S.No</th>
-                                    <th class="p-2">Date / Site</th>
-                                    <th class="p-2">Worker & Phone</th>
-                                    <th class="p-2">Timing</th>
-                                    <th class="p-2">Pending</th>
-                                    <th class="p-2">Paid</th>
-                                    <th class="p-2 text-center">SMS Alert</th>
-                                    <th class="p-2 text-center">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tableBody" class="divide-y divide-slate-100">
-                                <!-- Dynamic Rows -->
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Totals -->
-                    <div class="mt-4 p-3 bg-slate-50 rounded-lg border border-slate-200 grid grid-cols-2 gap-4 text-center">
-                        <div>
-                            <span class="text-xs text-slate-500 uppercase font-semibold">Total Pending</span>
-                            <p id="totalPendingDisplay" class="text-base font-bold text-amber-600">₹0</p>
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center justify-between">
+                            <span><i class="fa-solid fa-filter text-indigo-600 mr-1.5"></i> Table Filters</span>
+                            <button onclick="resetWorkerFilters()" class="text-indigo-600 hover:underline font-normal text-xs">Reset Filters</button>
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs">
+                            <div>
+                                <label class="block text-slate-500 mb-0.5">From Date</label>
+                                <input type="date" id="workerFromDate" onchange="renderWorkerTable()" class="w-full px-2.5 py-1 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-slate-500 mb-0.5">To Date</label>
+                                <input type="date" id="workerToDate" onchange="renderWorkerTable()" class="w-full px-2.5 py-1 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-slate-500 mb-0.5">Site Name</label>
+                                <input type="text" id="workerSiteFilter" oninput="renderWorkerTable()" placeholder="Site..." class="w-full px-2.5 py-1 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-slate-500 mb-0.5">Worker Name</label>
+                                <input type="text" id="workerSearchInput" oninput="renderWorkerTable()" placeholder="Worker..." class="w-full px-2.5 py-1 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
                         </div>
-                        <div>
-                            <span class="text-xs text-slate-500 uppercase font-semibold">Total Paid</span>
-                            <p id="totalPaidDisplay" class="text-base font-bold text-emerald-600">₹0</p>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                        <div class="flex items-center justify-between pb-3 border-b mb-3">
+                            <h2 class="text-base font-bold text-slate-700"><i class="fa-solid fa-list-check text-indigo-600 mr-2"></i>Daily Log Records</h2>
+                            <button onclick="clearAllWorkerData()" class="text-xs text-red-600 hover:bg-red-50 px-2.5 py-1 rounded border border-red-200">
+                                <i class="fa-solid fa-trash-can mr-1"></i> Clear All
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="bg-slate-100 text-slate-600 font-semibold border-b">
+                                        <th class="p-2">S.No</th>
+                                        <th class="p-2">Date / Site</th>
+                                        <th class="p-2">Worker / Category</th>
+                                        <th class="p-2">Shift / Timing</th>
+                                        <th class="p-2">Pending</th>
+                                        <th class="p-2">Paid</th>
+                                        <th class="p-2 text-center">SMS Alert</th>
+                                        <th class="p-2 text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="workerTableBody" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-4 p-3 bg-slate-50 rounded-lg border border-slate-200 grid grid-cols-2 gap-4 text-center">
+                            <div>
+                                <span class="text-xs text-slate-500 uppercase font-semibold">Total Pending</span>
+                                <p id="totalWorkerPendingDisplay" class="text-base font-bold text-amber-600">₹0</p>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-500 uppercase font-semibold">Total Paid</span>
+                                <p id="totalWorkerPaidDisplay" class="text-base font-bold text-emerald-600">₹0</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-        </div>
+            <!-- MODULE 2: Centring Work Measurements Module -->
+            <div id="moduleCentring" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Measurement Entry Form -->
+                <div class="lg:col-span-1 bg-white p-5 rounded-xl shadow-sm border border-slate-200 h-fit">
+                    <h2 id="centringFormTitle" class="text-base font-bold text-slate-700 mb-3 border-b pb-2 flex items-center justify-between">
+                        <span><i class="fa-solid fa-ruler-combined text-indigo-600 mr-2"></i>Add Measurement Entry</span>
+                        <button id="cancelCentringEditBtn" onclick="resetCentringForm()" class="hidden text-xs text-red-500 hover:underline">Cancel Edit</button>
+                    </h2>
+
+                    <form id="centringForm" onsubmit="handleCentringSubmit(event)" class="space-y-3 text-xs">
+                        <input type="hidden" id="centringEditIndex" value="-1">
+
+                        <div>
+                            <label class="block font-semibold uppercase text-slate-500 mb-1">Site Name</label>
+                            <input type="text" id="centringSite" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="e.g. Site B - Velachery">
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold uppercase text-slate-500 mb-1">Description</label>
+                            <input type="text" id="centringDesc" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="e.g. Roof Beam / Slab Work">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-semibold uppercase text-slate-500 mb-1">Size (L x W / Specs)</label>
+                                <input type="text" id="centringSize" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="e.g. 10x12 ft">
+                            </div>
+                            <div>
+                                <label class="block font-semibold uppercase text-slate-500 mb-1">Per Feet (ft)</label>
+                                <input type="number" id="centringPerFeet" min="0" step="any" required oninput="calculateCentringTotalFeet()" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="0">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-semibold uppercase text-slate-500 mb-1">Numbers (Qty)</label>
+                                <input type="number" id="centringNumbers" min="1" step="1" value="1" required oninput="calculateCentringTotalFeet()" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block font-semibold uppercase text-slate-500 mb-1">Total Feet (ft)</label>
+                                <input type="number" id="centringTotalFeet" readonly class="w-full px-3 py-2 border bg-slate-100 text-slate-700 rounded-lg font-bold" placeholder="0">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold uppercase text-slate-500 mb-1">Rate Per Feet (₹)</label>
+                            <input type="number" id="centringRate" min="0" step="any" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none" placeholder="0">
+                        </div>
+
+                        <button type="submit" id="centringSubmitBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg shadow transition text-xs">
+                            Save Centring Measurement
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Centring Data Table -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 flex items-center justify-between">
+                            <span><i class="fa-solid fa-filter text-indigo-600 mr-1.5"></i> Centring Measurement Filters</span>
+                            <button onclick="resetCentringFilters()" class="text-indigo-600 hover:underline font-normal text-xs">Reset Filters</button>
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            <div>
+                                <label class="block text-slate-500 mb-0.5">Filter Site</label>
+                                <input type="text" id="centringSiteFilter" oninput="renderCentringTable()" placeholder="Site Name..." class="w-full px-2.5 py-1 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-slate-500 mb-0.5">Filter Description</label>
+                                <input type="text" id="centringDescFilter" oninput="renderCentringTable()" placeholder="Description..." class="w-full px-2.5 py-1 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+                        <div class="flex items-center justify-between pb-3 border-b mb-3">
+                            <h2 class="text-base font-bold text-slate-700"><i class="fa-solid fa-table text-indigo-600 mr-2"></i>Centring Work Measures Log</h2>
+                            <button onclick="clearAllCentringData()" class="text-xs text-red-600 hover:bg-red-50 px-2.5 py-1 rounded border border-red-200">
+                                <i class="fa-solid fa-trash-can mr-1"></i> Clear All
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="bg-slate-100 text-slate-600 font-semibold border-b">
+                                        <th class="p-2">S.No</th>
+                                        <th class="p-2">Site</th>
+                                        <th class="p-2">Description</th>
+                                        <th class="p-2">Size</th>
+                                        <th class="p-2">Per Feet</th>
+                                        <th class="p-2">Numbers</th>
+                                        <th class="p-2">Total Feet</th>
+                                        <th class="p-2">Rate (₹)</th>
+                                        <th class="p-2">Total Cost (₹)</th>
+                                        <th class="p-2 text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="centringTableBody" class="divide-y divide-slate-100"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-4 p-3 bg-slate-50 rounded-lg border border-slate-200 grid grid-cols-2 gap-4 text-center">
+                            <div>
+                                <span class="text-xs text-slate-500 uppercase font-semibold">Total Feet</span>
+                                <p id="totalCentringFeetDisplay" class="text-base font-bold text-indigo-600">0 ft</p>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-500 uppercase font-semibold">Total Estimated Amount</span>
+                                <p id="totalCentringCostDisplay" class="text-base font-bold text-emerald-600">₹0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
     </div>
 
     <!-- Audit History Modal -->
@@ -243,7 +433,7 @@
         <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full p-5 max-h-[85vh] flex flex-col">
             <div class="flex justify-between items-center pb-3 border-b">
                 <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
-                    <i class="fa-solid fa-clock-rotate-left text-amber-500"></i> Record History & Restore Audit Log (2-Year Archive)
+                    <i class="fa-solid fa-clock-rotate-left text-amber-500"></i> Record Audit Logs & Restorations
                 </h3>
                 <button onclick="closeAuditModal()" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
             </div>
@@ -253,15 +443,13 @@
                     <thead>
                         <tr class="bg-slate-100 text-slate-600 font-semibold border-b">
                             <th class="p-2">Timestamp</th>
-                            <th class="p-2">Action</th>
-                            <th class="p-2">Worker / Site Details</th>
-                            <th class="p-2">Amount</th>
-                            <th class="p-2 text-center">Restore Option</th>
+                            <th class="p-2">Module / Action</th>
+                            <th class="p-2">Details</th>
+                            <th class="p-2">User</th>
+                            <th class="p-2 text-center">Restore</th>
                         </tr>
                     </thead>
-                    <tbody id="auditTableBody" class="divide-y divide-slate-100">
-                        <!-- Dynamic History Rows -->
-                    </tbody>
+                    <tbody id="auditTableBody" class="divide-y divide-slate-100"></tbody>
                 </table>
             </div>
 
@@ -306,9 +494,10 @@
 
     <!-- JavaScript Application Logic -->
     <script>
-        // Authentication & User Management Logic (Max 5 Mail IDs)
+        // Authentication & Session
         let registeredUsers = JSON.parse(localStorage.getItem('sp_centring_users')) || [];
         let activeSession = JSON.parse(localStorage.getItem('sp_centring_session')) || null;
+        let activeModule = 'worker'; // 'worker' or 'centring'
 
         function updateRegisteredCount() {
             document.getElementById('registeredCountDisplay').innerText = registeredUsers.length;
@@ -342,21 +531,18 @@
             errorDiv.classList.add('hidden');
             successDiv.classList.add('hidden');
 
-            // Limit Check: Maximum 5 Email IDs allowed
             if (registeredUsers.length >= 5) {
                 errorDiv.innerText = "Registration closed: Maximum limit of 5 Email IDs reached!";
                 errorDiv.classList.remove('hidden');
                 return;
             }
 
-            // Duplicate Check
             if (registeredUsers.some(u => u.email === email)) {
                 errorDiv.innerText = "This email ID is already registered!";
                 errorDiv.classList.remove('hidden');
                 return;
             }
 
-            // Register User
             registeredUsers.push({ email, password });
             localStorage.setItem('sp_centring_users', JSON.stringify(registeredUsers));
             updateRegisteredCount();
@@ -382,7 +568,6 @@
                 return;
             }
 
-            // Start Session
             activeSession = { email: user.email, loginTime: new Date().toISOString() };
             localStorage.setItem('sp_centring_session', JSON.stringify(activeSession));
 
@@ -402,45 +587,69 @@
                 document.getElementById('authScreen').classList.add('hidden');
                 document.getElementById('appBody').classList.remove('hidden');
                 document.getElementById('currentUserEmail').innerText = activeSession.email;
+                populateUserFilterDropdown();
+                renderWorkerTable();
+                renderCentringTable();
             } else {
                 document.getElementById('authScreen').classList.remove('hidden');
                 document.getElementById('appBody').classList.add('hidden');
             }
         }
 
-        // Data Storage Variables
-        let entries = JSON.parse(localStorage.getItem('sp_centring_entries')) || [];
+        // Module Switcher Logic
+        function switchModule(moduleName) {
+            activeModule = moduleName;
+            if (moduleName === 'worker') {
+                document.getElementById('moduleWorker').classList.remove('hidden');
+                document.getElementById('moduleCentring').classList.add('hidden');
+                document.getElementById('navWorkerBtn').className = "w-full text-left px-3 py-2 rounded-lg text-xs font-semibold bg-indigo-600 text-white flex items-center justify-between";
+                document.getElementById('navCentringBtn').className = "w-full text-left px-3 py-2 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 flex items-center justify-between";
+            } else {
+                document.getElementById('moduleWorker').classList.add('hidden');
+                document.getElementById('moduleCentring').classList.remove('hidden');
+                document.getElementById('navCentringBtn').className = "w-full text-left px-3 py-2 rounded-lg text-xs font-semibold bg-indigo-600 text-white flex items-center justify-between";
+                document.getElementById('navWorkerBtn').className = "w-full text-left px-3 py-2 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 flex items-center justify-between";
+            }
+            populateUserFilterDropdown();
+        }
+
+        // Data Local Storage Repositories
+        let workerEntries = JSON.parse(localStorage.getItem('sp_centring_entries')) || [];
+        let centringEntries = JSON.parse(localStorage.getItem('sp_centring_measures')) || [];
         let auditLogs = JSON.parse(localStorage.getItem('sp_centring_audit_logs')) || [];
 
-        // Clean up logs older than 2 years (730 days)
+        // Auto purge logs older than 2 years
         const TWO_YEARS_MS = 2 * 365 * 24 * 60 * 60 * 1000;
         auditLogs = auditLogs.filter(log => (new Date() - new Date(log.timestamp)) < TWO_YEARS_MS);
         localStorage.setItem('sp_centring_audit_logs', JSON.stringify(auditLogs));
 
-        // Default Date
-        document.getElementById('date').valueAsDate = new Date();
+        // Default Dates
+        document.getElementById('workerDate').valueAsDate = new Date();
         autoFillDay();
 
         function autoFillDay() {
-            const dateInput = document.getElementById('date').value;
+            const dateInput = document.getElementById('workerDate').value;
             if (dateInput) {
                 const date = new Date(dateInput);
                 const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                document.getElementById('day').value = days[date.getUTCDay()];
+                document.getElementById('workerDay').value = days[date.getUTCDay()];
             }
         }
 
         function saveToLocalStorage() {
-            localStorage.setItem('sp_centring_entries', JSON.stringify(entries));
+            localStorage.setItem('sp_centring_entries', JSON.stringify(workerEntries));
+            localStorage.setItem('sp_centring_measures', JSON.stringify(centringEntries));
             localStorage.setItem('sp_centring_audit_logs', JSON.stringify(auditLogs));
+            populateUserFilterDropdown();
         }
 
-        function addAuditLog(action, recordData, isRestorable = false) {
+        function addAuditLog(action, recordData, module, isRestorable = false) {
             const logEntry = {
                 id: 'LOG_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
                 timestamp: new Date().toISOString(),
                 user: activeSession ? activeSession.email : 'Unknown',
-                action: action, // 'ADDED', 'DELETED', 'EDITED', 'SMS_SENT'
+                action: action,
+                module: module,
                 data: recordData,
                 restorable: isRestorable
             };
@@ -448,44 +657,78 @@
             saveToLocalStorage();
         }
 
-        function handleFormSubmit(e) {
+        function populateUserFilterDropdown() {
+            const userSelect = document.getElementById('userSelectFilter');
+            const currentSelected = userSelect.value;
+            userSelect.innerHTML = '<option value="">-- All Records --</option>';
+
+            let optionsSet = new Set();
+            if (activeModule === 'worker') {
+                workerEntries.forEach(e => { if (e.name) optionsSet.add(e.name); if (e.siteName) optionsSet.add(e.siteName); });
+            } else {
+                centringEntries.forEach(e => { if (e.site) optionsSet.add(e.site); });
+            }
+
+            Array.from(optionsSet).sort().forEach(item => {
+                const option = document.createElement('option');
+                option.value = item;
+                option.textContent = item;
+                if (item === currentSelected) option.selected = true;
+                userSelect.appendChild(option);
+            });
+        }
+
+        function applyUserFilter(val) {
+            if (activeModule === 'worker') {
+                document.getElementById('workerSearchInput').value = val;
+                renderWorkerTable();
+            } else {
+                document.getElementById('centringSiteFilter').value = val;
+                renderCentringTable();
+            }
+        }
+
+        // ================= WORKER MODULE FUNCTIONS =================
+        function handleWorkerSubmit(e) {
             e.preventDefault();
-            const editIndex = parseInt(document.getElementById('editIndex').value);
+            const editIndex = parseInt(document.getElementById('workerEditIndex').value);
 
             const newEntry = {
-                id: editIndex === -1 ? 'REC_' + Date.now() : entries[editIndex].id,
-                siteName: document.getElementById('siteName').value.trim(),
-                name: document.getElementById('name').value.trim(),
-                phone: document.getElementById('phone').value.trim(),
-                date: document.getElementById('date').value,
-                day: document.getElementById('day').value,
-                timeStart: document.getElementById('timeStart').value || '-',
-                timeOut: document.getElementById('timeOut').value || '-',
-                pending: parseFloat(document.getElementById('pending').value) || 0,
-                paid: parseFloat(document.getElementById('paid').value) || 0,
-                smsHistory: editIndex !== -1 ? (entries[editIndex].smsHistory || []) : []
+                id: editIndex === -1 ? 'REC_' + Date.now() : workerEntries[editIndex].id,
+                siteName: document.getElementById('workerSiteName').value.trim(),
+                name: document.getElementById('workerName').value.trim(),
+                phone: document.getElementById('workerPhone').value.trim(),
+                category: document.getElementById('workerCategory').value,
+                shift: document.getElementById('workerShift').value,
+                date: document.getElementById('workerDate').value,
+                day: document.getElementById('workerDay').value,
+                timeStart: document.getElementById('workerTimeStart').value || '-',
+                timeOut: document.getElementById('workerTimeOut').value || '-',
+                pending: parseFloat(document.getElementById('workerPending').value) || 0,
+                paid: parseFloat(document.getElementById('workerPaid').value) || 0,
+                smsHistory: editIndex !== -1 ? (workerEntries[editIndex].smsHistory || []) : []
             };
 
             if (editIndex === -1) {
-                entries.push(newEntry);
-                addAuditLog('ADDED', newEntry, false);
+                workerEntries.push(newEntry);
+                addAuditLog('ADDED', newEntry, 'Worker Attendance', false);
             } else {
-                addAuditLog('EDITED', newEntry, false);
-                entries[editIndex] = newEntry;
+                addAuditLog('EDITED', newEntry, 'Worker Attendance', false);
+                workerEntries[editIndex] = newEntry;
             }
 
             saveToLocalStorage();
-            resetForm();
-            renderTable();
+            resetWorkerForm();
+            renderWorkerTable();
         }
 
-        function getFilteredEntries() {
-            const searchVal = document.getElementById('searchInput').value.toLowerCase();
-            const siteFilterVal = document.getElementById('siteFilter').value.toLowerCase();
-            const fromDateVal = document.getElementById('fromDate').value;
-            const toDateVal = document.getElementById('toDate').value;
+        function getFilteredWorkerEntries() {
+            const searchVal = document.getElementById('workerSearchInput').value.toLowerCase();
+            const siteFilterVal = document.getElementById('workerSiteFilter').value.toLowerCase();
+            const fromDateVal = document.getElementById('workerFromDate').value;
+            const toDateVal = document.getElementById('workerToDate').value;
 
-            return entries.filter(item => {
+            return workerEntries.filter(item => {
                 const matchesWorker = item.name.toLowerCase().includes(searchVal);
                 const matchesSite = (item.siteName || '').toLowerCase().includes(siteFilterVal);
 
@@ -497,20 +740,20 @@
             });
         }
 
-        function renderTable() {
-            const tbody = document.getElementById('tableBody');
+        function renderWorkerTable() {
+            const tbody = document.getElementById('workerTableBody');
             tbody.innerHTML = '';
 
             let totalPending = 0;
             let totalPaid = 0;
 
-            const filteredEntries = getFilteredEntries();
+            const filtered = getFilteredWorkerEntries();
 
-            if (filteredEntries.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-400">No records found</td></tr>`;
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-400">No worker records found</td></tr>`;
             } else {
-                filteredEntries.forEach((item, index) => {
-                    const originalIndex = entries.indexOf(item);
+                filtered.forEach((item, index) => {
+                    const originalIndex = workerEntries.indexOf(item);
                     totalPending += item.pending;
                     totalPaid += item.paid;
 
@@ -526,9 +769,12 @@
                         </td>
                         <td class="p-2">
                             <div class="font-bold text-slate-800">${item.name}</div>
-                            <div class="text-[11px] text-slate-500">${item.phone || 'No Phone'}</div>
+                            <div class="text-[11px] text-slate-500">${item.category || 'Centring Worker'} • ${item.phone || 'No Phone'}</div>
                         </td>
-                        <td class="p-2 text-slate-600">${item.timeStart} - ${item.timeOut}</td>
+                        <td class="p-2">
+                            <div class="font-medium text-slate-700">${item.shift || 'Full Day'}</div>
+                            <div class="text-[11px] text-slate-500">${item.timeStart} - ${item.timeOut}</div>
+                        </td>
                         <td class="p-2 font-semibold text-amber-600">₹${item.pending.toLocaleString()}</td>
                         <td class="p-2 font-semibold text-emerald-600">₹${item.paid.toLocaleString()}</td>
                         <td class="p-2 text-center">
@@ -537,10 +783,10 @@
                             </button>
                         </td>
                         <td class="p-2 text-center space-x-1">
-                            <button onclick="editEntry(${originalIndex})" class="text-indigo-600 hover:bg-indigo-50 p-1 rounded" title="Edit">
+                            <button onclick="editWorkerEntry(${originalIndex})" class="text-indigo-600 hover:bg-indigo-50 p-1 rounded" title="Edit">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </button>
-                            <button onclick="deleteEntry(${originalIndex})" class="text-red-500 hover:bg-red-50 p-1 rounded" title="Delete">
+                            <button onclick="deleteWorkerEntry(${originalIndex})" class="text-red-500 hover:bg-red-50 p-1 rounded" title="Delete">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </td>
@@ -549,77 +795,361 @@
                 });
             }
 
-            document.getElementById('totalPendingDisplay').innerText = `₹${totalPending.toLocaleString()}`;
-            document.getElementById('totalPaidDisplay').innerText = `₹${totalPaid.toLocaleString()}`;
+            document.getElementById('totalWorkerPendingDisplay').innerText = `₹${totalPending.toLocaleString()}`;
+            document.getElementById('totalWorkerPaidDisplay').innerText = `₹${totalPaid.toLocaleString()}`;
         }
 
-        function editEntry(index) {
-            const item = entries[index];
-            document.getElementById('editIndex').value = index;
-            document.getElementById('siteName').value = item.siteName || '';
-            document.getElementById('name').value = item.name;
-            document.getElementById('phone').value = item.phone || '';
-            document.getElementById('date').value = item.date;
-            document.getElementById('day').value = item.day;
-            document.getElementById('timeStart').value = item.timeStart === '-' ? '' : item.timeStart;
-            document.getElementById('timeOut').value = item.timeOut === '-' ? '' : item.timeOut;
-            document.getElementById('pending').value = item.pending;
-            document.getElementById('paid').value = item.paid;
+        function editWorkerEntry(index) {
+            const item = workerEntries[index];
+            document.getElementById('workerEditIndex').value = index;
+            document.getElementById('workerSiteName').value = item.siteName || '';
+            document.getElementById('workerName').value = item.name;
+            document.getElementById('workerPhone').value = item.phone || '';
+            document.getElementById('workerCategory').value = item.category || 'Centring Worker';
+            document.getElementById('workerShift').value = item.shift || 'Full Day';
+            document.getElementById('workerDate').value = item.date;
+            document.getElementById('workerDay').value = item.day;
+            document.getElementById('workerTimeStart').value = item.timeStart === '-' ? '' : item.timeStart;
+            document.getElementById('workerTimeOut').value = item.timeOut === '-' ? '' : item.timeOut;
+            document.getElementById('workerPending').value = item.pending;
+            document.getElementById('workerPaid').value = item.paid;
 
-            document.getElementById('formTitle').children[0].innerHTML = `<i class="fa-solid fa-pen-to-square text-indigo-600 mr-2"></i>Edit Entry #${index + 1}`;
-            document.getElementById('submitBtn').innerText = 'Update Entry';
-            document.getElementById('submitBtn').className = 'w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-2 rounded shadow transition';
-            document.getElementById('cancelEditBtn').classList.remove('hidden');
+            document.getElementById('workerFormTitle').children[0].innerHTML = `<i class="fa-solid fa-pen-to-square text-indigo-600 mr-2"></i>Edit Worker Entry #${index + 1}`;
+            document.getElementById('workerSubmitBtn').innerText = 'Update Entry';
+            document.getElementById('workerSubmitBtn').className = 'w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-2 rounded shadow transition';
+            document.getElementById('cancelWorkerEditBtn').classList.remove('hidden');
         }
 
-        function resetForm() {
-            document.getElementById('editIndex').value = -1;
-            document.getElementById('entryForm').reset();
-            document.getElementById('date').valueAsDate = new Date();
+        function resetWorkerForm() {
+            document.getElementById('workerEditIndex').value = -1;
+            document.getElementById('workerForm').reset();
+            document.getElementById('workerDate').valueAsDate = new Date();
             autoFillDay();
 
-            document.getElementById('formTitle').children[0].innerHTML = `<i class="fa-solid fa-plus-circle text-indigo-600 mr-2"></i>Add Worker Entry`;
-            document.getElementById('submitBtn').innerText = 'Save Entry';
-            document.getElementById('submitBtn').className = 'w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded shadow transition';
-            document.getElementById('cancelEditBtn').classList.add('hidden');
+            document.getElementById('workerFormTitle').children[0].innerHTML = `<i class="fa-solid fa-plus-circle text-indigo-600 mr-2"></i>Add Worker Entry`;
+            document.getElementById('workerSubmitBtn').innerText = 'Save Entry';
+            document.getElementById('workerSubmitBtn').className = 'w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded shadow transition';
+            document.getElementById('cancelWorkerEditBtn').classList.add('hidden');
         }
 
-        function resetFilters() {
-            document.getElementById('fromDate').value = '';
-            document.getElementById('toDate').value = '';
-            document.getElementById('siteFilter').value = '';
-            document.getElementById('searchInput').value = '';
-            renderTable();
+        function resetWorkerFilters() {
+            document.getElementById('workerFromDate').value = '';
+            document.getElementById('workerToDate').value = '';
+            document.getElementById('workerSiteFilter').value = '';
+            document.getElementById('workerSearchInput').value = '';
+            renderWorkerTable();
         }
 
-        function deleteEntry(index) {
-            if (confirm("Are you sure you want to delete this entry? It can be restored anytime from History.")) {
-                const deletedItem = entries[index];
-                addAuditLog('DELETED', deletedItem, true);
-                entries.splice(index, 1);
+        function deleteWorkerEntry(index) {
+            if (confirm("Delete this worker entry? You can restore it anytime from Audit Logs.")) {
+                const deleted = workerEntries[index];
+                addAuditLog('DELETED', deleted, 'Worker Attendance', true);
+                workerEntries.splice(index, 1);
                 saveToLocalStorage();
-                renderTable();
+                renderWorkerTable();
             }
         }
 
-        function clearAllData() {
-            if (entries.length === 0) return;
-            if (confirm("Warning: Are you sure you want to delete ALL active records?")) {
-                entries.forEach(item => addAuditLog('DELETED', item, true));
-                entries = [];
+        function clearAllWorkerData() {
+            if (workerEntries.length === 0) return;
+            if (confirm("Delete ALL active worker records?")) {
+                workerEntries.forEach(item => addAuditLog('DELETED', item, 'Worker Attendance', true));
+                workerEntries = [];
                 saveToLocalStorage();
-                renderTable();
+                renderWorkerTable();
             }
         }
 
-        // SMS Functions
+        // ================= CENTRING MODULE FUNCTIONS =================
+        function calculateCentringTotalFeet() {
+            const perFeet = parseFloat(document.getElementById('centringPerFeet').value) || 0;
+            const numbers = parseInt(document.getElementById('centringNumbers').value) || 1;
+            document.getElementById('centringTotalFeet').value = (perFeet * numbers).toFixed(2);
+        }
+
+        function handleCentringSubmit(e) {
+            e.preventDefault();
+            const editIndex = parseInt(document.getElementById('centringEditIndex').value);
+
+            const perFeet = parseFloat(document.getElementById('centringPerFeet').value) || 0;
+            const numbers = parseInt(document.getElementById('centringNumbers').value) || 1;
+            const totalFeet = perFeet * numbers;
+            const rate = parseFloat(document.getElementById('centringRate').value) || 0;
+
+            const newEntry = {
+                id: editIndex === -1 ? 'CTR_' + Date.now() : centringEntries[editIndex].id,
+                site: document.getElementById('centringSite').value.trim(),
+                desc: document.getElementById('centringDesc').value.trim(),
+                size: document.getElementById('centringSize').value.trim() || '-',
+                perFeet: perFeet,
+                numbers: numbers,
+                totalFeet: totalFeet,
+                rate: rate,
+                totalCost: totalFeet * rate
+            };
+
+            if (editIndex === -1) {
+                centringEntries.push(newEntry);
+                addAuditLog('ADDED', newEntry, 'Centring Work', false);
+            } else {
+                addAuditLog('EDITED', newEntry, 'Centring Work', false);
+                centringEntries[editIndex] = newEntry;
+            }
+
+            saveToLocalStorage();
+            resetCentringForm();
+            renderCentringTable();
+        }
+
+        function getFilteredCentringEntries() {
+            const siteFilter = document.getElementById('centringSiteFilter').value.toLowerCase();
+            const descFilter = document.getElementById('centringDescFilter').value.toLowerCase();
+
+            return centringEntries.filter(item => {
+                const matchesSite = (item.site || '').toLowerCase().includes(siteFilter);
+                const matchesDesc = (item.desc || '').toLowerCase().includes(descFilter);
+                return matchesSite && matchesDesc;
+            });
+        }
+
+        function renderCentringTable() {
+            const tbody = document.getElementById('centringTableBody');
+            tbody.innerHTML = '';
+
+            let grandTotalFeet = 0;
+            let grandTotalCost = 0;
+
+            const filtered = getFilteredCentringEntries();
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-6 text-slate-400">No centring work records found</td></tr>`;
+            } else {
+                filtered.forEach((item, index) => {
+                    const originalIndex = centringEntries.indexOf(item);
+                    grandTotalFeet += item.totalFeet;
+                    grandTotalCost += item.totalCost;
+
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 text-slate-700";
+                    tr.innerHTML = `
+                        <td class="p-2 font-medium">${index + 1}</td>
+                        <td class="p-2 font-bold text-indigo-700">${item.site}</td>
+                        <td class="p-2">${item.desc}</td>
+                        <td class="p-2 text-slate-500">${item.size}</td>
+                        <td class="p-2">${item.perFeet} ft</td>
+                        <td class="p-2">${item.numbers}</td>
+                        <td class="p-2 font-semibold text-slate-800">${item.totalFeet.toFixed(2)} ft</td>
+                        <td class="p-2">₹${item.rate.toLocaleString()}</td>
+                        <td class="p-2 font-bold text-emerald-600">₹${item.totalCost.toLocaleString()}</td>
+                        <td class="p-2 text-center space-x-1">
+                            <button onclick="editCentringEntry(${originalIndex})" class="text-indigo-600 hover:bg-indigo-50 p-1 rounded" title="Edit">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="deleteCentringEntry(${originalIndex})" class="text-red-500 hover:bg-red-50 p-1 rounded" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            document.getElementById('totalCentringFeetDisplay').innerText = `${grandTotalFeet.toFixed(2)} ft`;
+            document.getElementById('totalCentringCostDisplay').innerText = `₹${grandTotalCost.toLocaleString()}`;
+        }
+
+        function editCentringEntry(index) {
+            const item = centringEntries[index];
+            document.getElementById('centringEditIndex').value = index;
+            document.getElementById('centringSite').value = item.site;
+            document.getElementById('centringDesc').value = item.desc;
+            document.getElementById('centringSize').value = item.size === '-' ? '' : item.size;
+            document.getElementById('centringPerFeet').value = item.perFeet;
+            document.getElementById('centringNumbers').value = item.numbers;
+            document.getElementById('centringTotalFeet').value = item.totalFeet;
+            document.getElementById('centringRate').value = item.rate;
+
+            document.getElementById('centringFormTitle').children[0].innerHTML = `<i class="fa-solid fa-pen-to-square text-indigo-600 mr-2"></i>Edit Centring Entry #${index + 1}`;
+            document.getElementById('centringSubmitBtn').innerText = 'Update Measurement';
+            document.getElementById('centringSubmitBtn').className = 'w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-2 rounded shadow transition';
+            document.getElementById('cancelCentringEditBtn').classList.remove('hidden');
+        }
+
+        function resetCentringForm() {
+            document.getElementById('centringEditIndex').value = -1;
+            document.getElementById('centringForm').reset();
+            document.getElementById('centringNumbers').value = 1;
+
+            document.getElementById('centringFormTitle').children[0].innerHTML = `<i class="fa-solid fa-ruler-combined text-indigo-600 mr-2"></i>Add Measurement Entry`;
+            document.getElementById('centringSubmitBtn').innerText = 'Save Centring Measurement';
+            document.getElementById('centringSubmitBtn').className = 'w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded shadow transition';
+            document.getElementById('cancelCentringEditBtn').classList.add('hidden');
+        }
+
+        function resetCentringFilters() {
+            document.getElementById('centringSiteFilter').value = '';
+            document.getElementById('centringDescFilter').value = '';
+            renderCentringTable();
+        }
+
+        function deleteCentringEntry(index) {
+            if (confirm("Delete this centring measurement entry? You can restore it anytime from Audit Logs.")) {
+                const deleted = centringEntries[index];
+                addAuditLog('DELETED', deleted, 'Centring Work', true);
+                centringEntries.splice(index, 1);
+                saveToLocalStorage();
+                renderCentringTable();
+            }
+        }
+
+        function clearAllCentringData() {
+            if (centringEntries.length === 0) return;
+            if (confirm("Delete ALL active centring measurement records?")) {
+                centringEntries.forEach(item => addAuditLog('DELETED', item, 'Centring Work', true));
+                centringEntries = [];
+                saveToLocalStorage();
+                renderCentringTable();
+            }
+        }
+
+        // ================= IMPORT & EXPORT LOGIC =================
+        function exportToCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+
+            if (activeModule === 'worker') {
+                const filtered = getFilteredWorkerEntries();
+                if (filtered.length === 0) return alert("No worker data to export!");
+                csvContent += "S.No,Date,Day,Site Name,Worker Name,Phone,Category,Shift,Time Start,Time Out,Pending Amount,Paid Amount\n";
+                filtered.forEach((item, index) => {
+                    csvContent += [index + 1, `"${item.date}"`, `"${item.day}"`, `"${item.siteName || ''}"`, `"${item.name}"`, `"${item.phone || ''}"`, `"${item.category || ''}"`, `"${item.shift || ''}"`, `"${item.timeStart}"`, `"${item.timeOut}"`, item.pending, item.paid].join(",") + "\n";
+                });
+            } else {
+                const filtered = getFilteredCentringEntries();
+                if (filtered.length === 0) return alert("No centring data to export!");
+                csvContent += "S.No,Site,Description,Size,Per Feet,Numbers,Total Feet,Rate,Total Cost\n";
+                filtered.forEach((item, index) => {
+                    csvContent += [index + 1, `"${item.site}"`, `"${item.desc}"`, `"${item.size}"`, item.perFeet, item.numbers, item.totalFeet, item.rate, item.totalCost].join(",") + "\n";
+                });
+            }
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `SP_Centring_${activeModule.toUpperCase()}_Export_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: 'landscape' });
+
+            doc.setFontSize(16);
+            doc.setTextColor(30, 41, 59);
+
+            if (activeModule === 'worker') {
+                const filtered = getFilteredWorkerEntries();
+                if (filtered.length === 0) return alert("No data to export!");
+                doc.text("SP CENTRING WORKS - WORKER ATTENDANCE REPORT", 14, 15);
+                doc.setFontSize(9);
+                doc.setTextColor(100, 116, 139);
+                doc.text(`Report Date: ${new Date().toLocaleDateString()}`, 14, 22);
+
+                const tableColumn = ["S.No", "Date", "Site Name", "Worker Name", "Category", "Shift", "Pending (₹)", "Paid (₹)"];
+                const tableRows = filtered.map((item, index) => [index + 1, item.date, item.siteName || '-', item.name, item.category, item.shift, item.pending, item.paid]);
+
+                doc.autoTable({ head: [tableColumn], body: tableRows, startY: 26, theme: 'striped', headStyles: { fillColor: [67, 56, 202] } });
+            } else {
+                const filtered = getFilteredCentringEntries();
+                if (filtered.length === 0) return alert("No data to export!");
+                doc.text("SP CENTRING WORKS - MEASUREMENTS REPORT", 14, 15);
+                doc.setFontSize(9);
+                doc.setTextColor(100, 116, 139);
+                doc.text(`Report Date: ${new Date().toLocaleDateString()}`, 14, 22);
+
+                const tableColumn = ["S.No", "Site", "Description", "Size", "Per Feet", "Numbers", "Total Feet", "Rate (₹)", "Total Cost (₹)"];
+                const tableRows = filtered.map((item, index) => [index + 1, item.site, item.desc, item.size, item.perFeet, item.numbers, item.totalFeet, item.rate, item.totalCost]);
+
+                doc.autoTable({ head: [tableColumn], body: tableRows, startY: 26, theme: 'striped', headStyles: { fillColor: [67, 56, 202] } });
+            }
+
+            doc.save(`SP_Centring_${activeModule.toUpperCase()}_Report_${new Date().toISOString().slice(0,10)}.pdf`);
+        }
+
+        function importCSVFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const text = e.target.result;
+                const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+                if (lines.length <= 1) return alert("Invalid CSV format or file is empty!");
+
+                let importedCount = 0;
+
+                if (activeModule === 'worker') {
+                    for (let i = 1; i < lines.length; i++) {
+                        const cols = lines[i].split(',').map(c => c.replace(/^"|"$/g, '').trim());
+                        if (cols.length >= 5) {
+                            workerEntries.push({
+                                id: 'REC_' + Date.now() + '_' + i,
+                                date: cols[1] || new Date().toISOString().slice(0,10),
+                                day: cols[2] || 'Monday',
+                                siteName: cols[3] || 'Imported Site',
+                                name: cols[4] || 'Worker',
+                                phone: cols[5] || '',
+                                category: cols[6] || 'Centring Worker',
+                                shift: cols[7] || 'Full Day',
+                                timeStart: cols[8] || '-',
+                                timeOut: cols[9] || '-',
+                                pending: parseFloat(cols[10]) || 0,
+                                paid: parseFloat(cols[11]) || 0
+                            });
+                            importedCount++;
+                        }
+                    }
+                    renderWorkerTable();
+                } else {
+                    for (let i = 1; i < lines.length; i++) {
+                        const cols = lines[i].split(',').map(c => c.replace(/^"|"$/g, '').trim());
+                        if (cols.length >= 4) {
+                            const perFeet = parseFloat(cols[4]) || 0;
+                            const numbers = parseInt(cols[5]) || 1;
+                            const totalFeet = perFeet * numbers;
+                            const rate = parseFloat(cols[7]) || 0;
+
+                            centringEntries.push({
+                                id: 'CTR_' + Date.now() + '_' + i,
+                                site: cols[1] || 'Imported Site',
+                                desc: cols[2] || 'Centring Work',
+                                size: cols[3] || '-',
+                                perFeet: perFeet,
+                                numbers: numbers,
+                                totalFeet: totalFeet,
+                                rate: rate,
+                                totalCost: totalFeet * rate
+                            });
+                            importedCount++;
+                        }
+                    }
+                    renderCentringTable();
+                }
+
+                saveToLocalStorage();
+                alert(`Successfully imported ${importedCount} records into ${activeModule.toUpperCase()} module!`);
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        // ================= SMS & AUDIT LOGIC =================
         function openSmsModal(index) {
-            const item = entries[index];
+            const item = workerEntries[index];
             document.getElementById('smsRecordIndex').value = index;
             document.getElementById('smsPhone').value = item.phone || '';
-
-            const message = `You have received your amount Eg: ₹${item.paid || 0} please check your gpay or phone pay for site: ${item.siteName || 'SP Centring'}`;
-            document.getElementById('smsText').value = message;
+            document.getElementById('smsText').value = `Hello ${item.name}, payment of ₹${item.paid || 0} processed for site ${item.siteName || 'SP Centring'}. Balance Pending: ₹${item.pending || 0}.`;
 
             document.getElementById('smsModal').classList.remove('hidden');
             document.getElementById('smsModal').classList.add('flex');
@@ -635,25 +1165,19 @@
             const phone = document.getElementById('smsPhone').value.trim();
             const message = document.getElementById('smsText').value;
 
-            if (!phone) {
-                alert("Please enter a valid phone number!");
-                return;
-            }
+            if (!phone) return alert("Please enter a mobile number!");
 
-            if (!entries[index].smsHistory) entries[index].smsHistory = [];
-            const smsEvent = { sentAt: new Date().toISOString(), phone: phone, text: message };
-            entries[index].smsHistory.push(smsEvent);
+            if (!workerEntries[index].smsHistory) workerEntries[index].smsHistory = [];
+            workerEntries[index].smsHistory.push({ sentAt: new Date().toISOString(), phone, text: message });
 
-            addAuditLog('SMS_SENT', { worker: entries[index].name, phone: phone, message: message }, false);
+            addAuditLog('SMS_SENT', { worker: workerEntries[index].name, phone, message }, 'Worker Attendance', false);
             saveToLocalStorage();
 
             window.location.href = `sms:${phone}?body=${encodeURIComponent(message)}`;
-
             closeSmsModal();
-            renderTable();
+            renderWorkerTable();
         }
 
-        // Audit Modal & Restore Logic
         function openAuditModal() {
             renderAuditTable();
             document.getElementById('auditModal').classList.remove('hidden');
@@ -670,7 +1194,7 @@
             tbody.innerHTML = '';
 
             if (auditLogs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-400">No history records found</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-400">No audit records found</td></tr>`;
                 return;
             }
 
@@ -680,7 +1204,6 @@
                 if (log.action === 'ADDED') badgeClass = "bg-emerald-100 text-emerald-800";
                 if (log.action === 'DELETED') badgeClass = "bg-red-100 text-red-800";
                 if (log.action === 'EDITED') badgeClass = "bg-amber-100 text-amber-800";
-                if (log.action === 'SMS_SENT') badgeClass = "bg-indigo-100 text-indigo-800";
 
                 const data = log.data || {};
 
@@ -690,13 +1213,13 @@
                     <td class="p-2 text-slate-500 font-mono text-[11px]">${dateStr}</td>
                     <td class="p-2">
                         <span class="px-2 py-0.5 rounded text-[10px] font-bold ${badgeClass}">${log.action}</span>
-                        <div class="text-[9px] text-slate-400">${log.user || 'Unknown'}</div>
+                        <div class="text-[9px] text-slate-400">${log.module || 'Worker'}</div>
                     </td>
                     <td class="p-2">
-                        <div class="font-bold text-slate-800">${data.name || data.worker || 'N/A'}</div>
-                        <div class="text-[11px] text-slate-500">${data.siteName || data.phone || ''}</div>
+                        <div class="font-bold text-slate-800">${data.name || data.site || 'Record'}</div>
+                        <div class="text-[11px] text-slate-500">${data.siteName || data.desc || ''}</div>
                     </td>
-                    <td class="p-2 font-semibold text-slate-700">₹${data.paid || 0}</td>
+                    <td class="p-2 text-slate-600">${log.user}</td>
                     <td class="p-2 text-center">
                         ${log.restorable ? `<button onclick="restoreRecord('${log.id}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 px-2 py-1 rounded text-[11px] font-semibold"><i class="fa-solid fa-rotate-left mr-1"></i>Restore</button>` : `<span class="text-slate-300">-</span>`}
                     </td>
@@ -708,79 +1231,22 @@
         function restoreRecord(logId) {
             const log = auditLogs.find(l => l.id === logId);
             if (log && log.data) {
-                entries.push(log.data);
+                if (log.module === 'Centring Work') {
+                    centringEntries.push(log.data);
+                    renderCentringTable();
+                } else {
+                    workerEntries.push(log.data);
+                    renderWorkerTable();
+                }
                 log.restorable = false;
-                addAuditLog('RESTORED', log.data, false);
+                addAuditLog('RESTORED', log.data, log.module, false);
                 saveToLocalStorage();
                 renderAuditTable();
-                renderTable();
-                alert(`Record for ${log.data.name} restored successfully!`);
+                alert(`Record restored successfully!`);
             }
         }
 
-        function exportToPDF() {
-            const filteredData = getFilteredEntries();
-            if (filteredData.length === 0) {
-                alert("No filtered data available to export!");
-                return;
-            }
-
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'landscape' });
-
-            const fromDateVal = document.getElementById('fromDate').value;
-            const toDateVal = document.getElementById('toDate').value;
-            const rangeText = (fromDateVal || toDateVal) ? `Range: ${fromDateVal || 'Start'} to ${toDateVal || 'End'}` : "Full History";
-
-            doc.setFontSize(16);
-            doc.setTextColor(30, 41, 59);
-            doc.text("SP CENTRING WORKS", 14, 15);
-
-            doc.setFontSize(9);
-            doc.setTextColor(100, 116, 139);
-            doc.text(`Daily Attendance, Payments & SMS Audit Log Report (${rangeText}) | Generated: ${new Date().toLocaleDateString()}`, 14, 22);
-
-            const tableColumn = ["S.No", "Date", "Site Name", "Worker Name", "Phone", "Timing", "Pending (₹)", "Paid (₹)"];
-            const tableRows = [];
-
-            let totalPending = 0;
-            let totalPaid = 0;
-
-            filteredData.forEach((item, index) => {
-                totalPending += item.pending;
-                totalPaid += item.paid;
-
-                tableRows.push([
-                    index + 1,
-                    item.date,
-                    item.siteName || '-',
-                    item.name,
-                    item.phone || '-',
-                    `${item.timeStart} - ${item.timeOut}`,
-                    item.pending.toLocaleString(),
-                    item.paid.toLocaleString()
-                ]);
-            });
-
-            tableRows.push([
-                { content: "Filtered Total", colSpan: 6, styles: { fontStyle: 'bold', halign: 'right' } },
-                { content: `₹${totalPending.toLocaleString()}`, styles: { fontStyle: 'bold', textColor: [180, 83, 9] } },
-                { content: `₹${totalPaid.toLocaleString()}`, styles: { fontStyle: 'bold', textColor: [4, 120, 87] } }
-            ]);
-
-            doc.autoTable({
-                head: [tableColumn],
-                body: tableRows,
-                startY: 26,
-                theme: 'striped',
-                headStyles: { fillColor: [67, 56, 202] },
-                styles: { fontSize: 8 }
-            });
-
-            doc.save(`SP_Centring_Works_Report_${new Date().toISOString().slice(0,10)}.pdf`);
-        }
-
-        // Initialize Session Check
+        // Initialize Application
         checkSessionAndInitialize();
     </script>
 </body>
