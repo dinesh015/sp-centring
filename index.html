@@ -3,252 +3,697 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SP Centring Works - Complete Management Portal</title>
+    <title>SP Centring Works - Payment Portal</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            yellow: '#FFC107',
-                            yellowHover: '#E0A800',
-                            dark: '#121212',
-                            card: '#1E1E1E',
-                            cardHover: '#2A2A2A',
-                            border: '#333333',
-                            accent: '#262626'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <!-- jsPDF & autoTable -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <!-- FontAwesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        /* Custom scrollbar for dark UI */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #121212; }
-        ::-webkit-scrollbar-thumb { background: #333333; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #FFC107; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+        /* =========================================================
+           SP CENTRING — PRODUCT UI ENHANCEMENT LAYER
+           Inspired by the clean, premium visual language of the
+           supplied telematics reference screenshot.
+           Existing functionality/classes are preserved.
+           ========================================================= */
+
+        :root {
+            --sp-yellow: #facc15;
+            --sp-yellow-strong: #eab308;
+            --sp-indigo: #6366f1;
+            --sp-bg: #070b12;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background:
+                radial-gradient(circle at 15% 10%, rgba(250,204,21,.07), transparent 26%),
+                radial-gradient(circle at 85% 15%, rgba(99,102,241,.10), transparent 28%),
+                #070b12 !important;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: -1;
+            opacity: .32;
+            background-image:
+                linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: linear-gradient(to bottom, black, transparent 85%);
+        }
+
+        .glass-panel {
+            background: linear-gradient(145deg, rgba(20,28,45,.90), rgba(8,13,23,.78));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,.08);
+            box-shadow: 0 25px 80px rgba(0,0,0,.42), inset 0 1px 0 rgba(255,255,255,.035);
+        }
+
+        .glass-card {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg, rgba(30,41,59,.58), rgba(15,23,42,.50));
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,.065);
+            box-shadow: 0 12px 35px rgba(0,0,0,.16);
+            transition: transform .28s cubic-bezier(.16,1,.3,1), border-color .28s ease, box-shadow .28s ease;
+        }
+
+        .glass-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(110deg, transparent 20%, rgba(255,255,255,.045) 50%, transparent 80%);
+            transform: translateX(-120%);
+            transition: transform .75s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(250,204,21,.20);
+            box-shadow: 0 18px 45px rgba(0,0,0,.24), 0 0 0 1px rgba(250,204,21,.035);
+        }
+
+        .glass-card:hover::before { transform: translateX(120%); }
+
+        .glass-input {
+            background: rgba(5,10,18,.72) !important;
+            border: 1px solid rgba(255,255,255,.085) !important;
+            transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease, background .2s ease;
+        }
+
+        .glass-input:hover { border-color: rgba(255,255,255,.16) !important; }
+
+        .glass-input:focus {
+            border-color: var(--sp-yellow) !important;
+            box-shadow: 0 0 0 3px rgba(250,204,21,.10), 0 0 24px rgba(250,204,21,.08) !important;
+            background: rgba(8,14,24,.92) !important;
+            transform: translateY(-1px);
+        }
+
+        .glow-bg {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(105px);
+            opacity: .13;
+            pointer-events: none;
+            z-index: 0;
+            animation: floatGlow 11s ease-in-out infinite alternate;
+        }
+
+        @keyframes floatGlow {
+            0% { transform: translate3d(0,0,0) scale(1); }
+            100% { transform: translate3d(28px,-18px,0) scale(1.10); }
+        }
+
+        .sp-topbar {
+            position: relative;
+            min-height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 14px 18px;
+            border: 1px solid rgba(255,255,255,.07);
+            border-radius: 22px;
+            background: linear-gradient(120deg, rgba(255,255,255,.055), rgba(255,255,255,.018));
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 12px 34px rgba(0,0,0,.16);
+            overflow: hidden;
+        }
+
+        .sp-topbar::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--sp-yellow), transparent 48%, rgba(99,102,241,.85));
+            opacity: .9;
+        }
+
+        .sp-brand-mark {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            border-radius: 13px;
+            color: #0b0f17;
+            background: linear-gradient(135deg, #fde047, #f59e0b);
+            box-shadow: 0 8px 25px rgba(250,204,21,.18);
+            transform: rotate(-3deg);
+        }
+
+        .sp-live-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 11px;
+            border-radius: 999px;
+            background: rgba(16,185,129,.08);
+            border: 1px solid rgba(16,185,129,.18);
+            color: #86efac;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        .sp-live-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 0 5px rgba(74,222,128,.08), 0 0 12px rgba(74,222,128,.45);
+            animation: livePulse 1.8s ease-in-out infinite;
+        }
+
+        @keyframes livePulse {
+            0%,100% { opacity: .65; transform: scale(.85); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .sp-hero {
+            position: relative;
+            overflow: hidden;
+            min-height: 172px;
+            padding: 28px;
+            border-radius: 28px;
+            border: 1px solid rgba(255,255,255,.075);
+            background:
+                linear-gradient(100deg, rgba(7,11,18,.97) 5%, rgba(13,19,31,.80) 54%, rgba(20,25,34,.63)),
+                radial-gradient(circle at 90% 50%, rgba(250,204,21,.16), transparent 34%);
+            box-shadow: 0 22px 55px rgba(0,0,0,.22);
+        }
+
+        .sp-hero::before {
+            content: "";
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            right: -80px;
+            top: -120px;
+            border-radius: 50%;
+            background: rgba(250,204,21,.09);
+            filter: blur(30px);
+            animation: heroFloat 8s ease-in-out infinite alternate;
+        }
+
+        .sp-hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.035) 50%, transparent 65%);
+            transform: translateX(-110%);
+            animation: heroSweep 7s ease-in-out infinite;
+        }
+
+        @keyframes heroFloat {
+            from { transform: translate(0,0); }
+            to { transform: translate(-28px,24px); }
+        }
+
+        @keyframes heroSweep {
+            0%,55% { transform: translateX(-110%); }
+            75%,100% { transform: translateX(110%); }
+        }
+
+        .sp-hero-content { position: relative; z-index: 2; }
+
+        .sp-kicker {
+            color: var(--sp-yellow);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .16em;
+            text-transform: uppercase;
+        }
+
+        .sp-hero-title {
+            margin-top: 7px;
+            font-size: clamp(1.45rem, 2.5vw, 2.2rem);
+            line-height: 1.08;
+            font-weight: 800;
+            letter-spacing: -.035em;
+            color: #fff;
+        }
+
+        .sp-hero-title span {
+            background: linear-gradient(90deg, #fff 15%, #fde68a 72%, #facc15);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .sp-hero-copy {
+            max-width: 720px;
+            margin-top: 10px;
+            color: #94a3b8;
+            font-size: 12px;
+            line-height: 1.7;
+        }
+
+        .sp-stat-strip {
+            position: relative;
+            z-index: 3;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0,1fr));
+            gap: 10px;
+            margin-top: 22px;
+        }
+
+        .sp-stat {
+            min-height: 74px;
+            padding: 12px 14px;
+            border-radius: 17px;
+            background: rgba(255,255,255,.035);
+            border: 1px solid rgba(255,255,255,.065);
+            transition: transform .2s ease, border-color .2s ease, background .2s ease;
+        }
+
+        .sp-stat:hover {
+            transform: translateY(-2px);
+            border-color: rgba(250,204,21,.18);
+            background: rgba(250,204,21,.045);
+        }
+
+        .sp-stat-label {
+            color: #64748b;
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .10em;
+        }
+
+        .sp-stat-value {
+            margin-top: 5px;
+            color: #f8fafc;
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        #sidebar {
+            background: linear-gradient(180deg, rgba(12,18,30,.96), rgba(6,10,18,.94)) !important;
+            border-right-color: rgba(255,255,255,.07) !important;
+        }
+
+        #sidebar h1 { letter-spacing: .13em; }
+
+        .nav-active {
+            position: relative;
+            background: linear-gradient(135deg, #facc15 0%, #f59e0b 100%) !important;
+            box-shadow: 0 9px 28px rgba(250,204,21,.17), inset 0 1px 0 rgba(255,255,255,.32);
+            color: #111827 !important;
+            transform: translateX(2px);
+        }
+
+        .nav-active::before {
+            content: "";
+            position: absolute;
+            left: -1px;
+            top: 12px;
+            bottom: 12px;
+            width: 3px;
+            border-radius: 99px;
+            background: #fff;
+            box-shadow: 0 0 12px rgba(255,255,255,.7);
+        }
+
+        #sidebar button:not(.nav-active):hover { transform: translateX(2px); }
+
+        button { position: relative; overflow: hidden; }
+
+        button::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.10) 50%, transparent 70%);
+            transform: translateX(-120%);
+            transition: transform .55s ease;
+            pointer-events: none;
+        }
+
+        button:hover::after { transform: translateX(120%); }
+
+        table thead tr {
+            position: sticky;
+            top: 0;
+            z-index: 4;
+            backdrop-filter: blur(12px);
+            background: rgba(8,13,23,.88) !important;
+        }
+
+        table tbody tr { transition: background .18s ease, transform .18s ease; }
+
+        table tbody tr:hover { background: rgba(250,204,21,.035); }
+
+        .animate-fade-in {
+            animation: fadeIn .42s cubic-bezier(.16,1,.3,1) forwards;
+        }
+
+        .animate-pop-in {
+            animation: popIn .34s cubic-bezier(.16,1,.3,1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(.96) translateY(6px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .shimmer {
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.04) 50%, rgba(255,255,255,0) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        @media (max-width: 900px) {
+            .sp-stat-strip { grid-template-columns: repeat(2, minmax(0,1fr)); }
+            .sp-hero { padding: 22px; }
+        }
+
+        @media (max-width: 640px) {
+            .sp-topbar { align-items: flex-start; }
+            .sp-topbar .sp-live-pill { display: none; }
+            .sp-stat-strip { grid-template-columns: 1fr 1fr; }
+            .sp-hero-title { font-size: 1.5rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+            }
+        }
     </style>
 </head>
-<body class="bg-brand-dark min-h-screen text-slate-100 font-sans flex flex-col selection:bg-brand-yellow selection:text-black">
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col antialiased selection:bg-indigo-500 selection:text-white relative overflow-x-hidden">
 
-    <!-- Embedded Base64 Logo Placeholder / Dynamic Image -->
-    <script>
-        // High-resolution branding logo container
-        const SP_LOGO_SRC = "https://i.ibb.co/L5QxZ8N/sp-centring-logo.png"; // Fallback/Provided URL
-    </script>
+    <!-- Ambient Glowing Background Elements -->
+    <div class="glow-bg w-96 h-96 bg-indigo-600 top-10 left-10"></div>
+    <div class="glow-bg w-96 h-96 bg-purple-600 bottom-10 right-10"></div>
 
     <!-- Auth Container (Login / Signup Screen) -->
-    <div id="authScreen" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
-        <div class="bg-brand-card rounded-2xl shadow-2xl max-w-md w-full p-6 border border-brand-border">
-            <div class="text-center mb-6">
-                <!-- SP Logo in Auth -->
-                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-black border border-brand-yellow/30 p-2 mb-3 shadow-lg shadow-brand-yellow/5">
-                    <img id="authLogo" src="" alt="SP Centring Logo" class="w-full h-full object-contain">
+    <div id="authScreen" class="fixed inset-0 bg-slate-950/80 backdrop-blur-2xl z-50 flex items-center justify-center p-4">
+        <div class="glass-panel bg-slate-900/80 rounded-3xl max-w-md w-full p-8 border border-slate-800 animate-pop-in relative z-10">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 text-white text-2xl font-bold mb-3 shadow-lg shadow-indigo-500/40">
+                    <i class="fa-solid fa-building-shield"></i>
                 </div>
-                <h2 class="text-xl font-extrabold text-white tracking-wide">SP CENTRING WORKS</h2>
-                <p class="text-xs text-brand-yellow mt-1 font-medium"><i class="fa-solid fa-shield-halved mr-1"></i> Authorized Access Portal (Max 5 Users)</p>
+                <h2 class="text-2xl font-extrabold tracking-tight text-white">SP CENTRING WORKS</h2>
+                <p class="text-xs font-medium text-slate-400 mt-1">Authorized Access Portal (Max 5 Registered Users)</p>
             </div>
 
             <!-- Login / Signup Toggle Tabs -->
-            <div class="flex border-b border-brand-border mb-5 text-xs font-semibold">
-                <button id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 pb-2 border-b-2 border-brand-yellow text-brand-yellow text-center transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-right-to-bracket"></i> Log In
-                </button>
-                <button id="tabSignup" onclick="switchAuthTab('signup')" class="flex-1 pb-2 border-b-2 border-transparent text-slate-400 hover:text-white text-center transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-user-plus"></i> Sign Up
-                </button>
+            <div class="flex p-1 bg-slate-950/80 rounded-2xl mb-6 text-xs font-semibold border border-slate-800/80">
+                <button id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 py-2.5 rounded-xl text-white bg-indigo-600 shadow-md transition-all duration-200 text-center">Log In</button>
+                <button id="tabSignup" onclick="switchAuthTab('signup')" class="flex-1 py-2.5 rounded-xl text-slate-400 hover:text-white transition-all duration-200 text-center">Sign Up (New User)</button>
             </div>
 
             <!-- Login Form -->
             <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4 text-xs">
                 <div>
-                    <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-envelope text-brand-yellow"></i> Email Address</label>
-                    <input type="email" id="loginEmail" required class="w-full px-3 py-2.5 bg-brand-dark border border-brand-border rounded-lg focus:border-brand-yellow text-white outline-none text-xs transition" placeholder="name@spcentring.com">
+                    <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Email Address</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-envelope absolute left-3.5 top-3.5 text-slate-500"></i>
+                        <input type="email" id="loginEmail" required class="w-full pl-10 pr-3 py-3 glass-input rounded-xl outline-none text-xs text-white placeholder-slate-600" placeholder="name@spcentring.com">
+                    </div>
                 </div>
                 <div>
-                    <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-key text-brand-yellow"></i> Password</label>
-                    <input type="password" id="loginPassword" required class="w-full px-3 py-2.5 bg-brand-dark border border-brand-border rounded-lg focus:border-brand-yellow text-white outline-none text-xs transition" placeholder="••••••••">
+                    <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Password</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-3.5 top-3.5 text-slate-500"></i>
+                        <input type="password" id="loginPassword" required class="w-full pl-10 pr-3 py-3 glass-input rounded-xl outline-none text-xs text-white placeholder-slate-600" placeholder="••••••••">
+                    </div>
                 </div>
-                <div id="loginError" class="hidden text-red-400 text-xs bg-red-950/40 p-2.5 rounded border border-red-800/50 flex items-center gap-2">
-                    <i class="fa-solid fa-circle-exclamation"></i> <span></span>
-                </div>
-                <button type="submit" class="w-full bg-brand-yellow hover:bg-brand-yellowHover text-black font-bold py-2.5 rounded-lg shadow-lg shadow-brand-yellow/10 text-xs transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-right-to-bracket"></i> Log In to Access App
+                <div id="loginError" class="hidden text-red-400 text-xs bg-red-950/40 p-3 rounded-xl border border-red-800/50"></div>
+                <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 text-xs transition active:scale-[0.98]">
+                    Log In to Access App
                 </button>
             </form>
 
             <!-- Signup Form -->
             <form id="signupForm" onsubmit="handleSignup(event)" class="space-y-4 text-xs hidden">
                 <div>
-                    <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-envelope text-brand-yellow"></i> Email Address</label>
-                    <input type="email" id="signupEmail" required class="w-full px-3 py-2.5 bg-brand-dark border border-brand-border rounded-lg focus:border-brand-yellow text-white outline-none text-xs transition" placeholder="name@spcentring.com">
+                    <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Email Address</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-envelope absolute left-3.5 top-3.5 text-slate-500"></i>
+                        <input type="email" id="signupEmail" required class="w-full pl-10 pr-3 py-3 glass-input rounded-xl outline-none text-xs text-white placeholder-slate-600" placeholder="name@spcentring.com">
+                    </div>
                 </div>
                 <div>
-                    <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-lock text-brand-yellow"></i> Password</label>
-                    <input type="password" id="signupPassword" required minlength="6" class="w-full px-3 py-2.5 bg-brand-dark border border-brand-border rounded-lg focus:border-brand-yellow text-white outline-none text-xs transition" placeholder="Min 6 characters">
+                    <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Password</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-3.5 top-3.5 text-slate-500"></i>
+                        <input type="password" id="signupPassword" required minlength="6" class="w-full pl-10 pr-3 py-3 glass-input rounded-xl outline-none text-xs text-white placeholder-slate-600" placeholder="Min 6 characters">
+                    </div>
                 </div>
-                <div id="signupError" class="hidden text-red-400 text-xs bg-red-950/40 p-2.5 rounded border border-red-800/50 flex items-center gap-2">
-                    <i class="fa-solid fa-circle-exclamation"></i> <span></span>
-                </div>
-                <div id="signupSuccess" class="hidden text-emerald-400 text-xs bg-emerald-950/40 p-2.5 rounded border border-emerald-800/50 flex items-center gap-2">
-                    <i class="fa-solid fa-circle-check"></i> <span></span>
-                </div>
-                <button type="submit" class="w-full bg-white hover:bg-slate-200 text-black font-bold py-2.5 rounded-lg shadow text-xs transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-user-check"></i> Register Account
+                <div id="signupError" class="hidden text-red-400 text-xs bg-red-950/40 p-3 rounded-xl border border-red-800/50"></div>
+                <div id="signupSuccess" class="hidden text-emerald-400 text-xs bg-emerald-950/40 p-3 rounded-xl border border-emerald-800/50"></div>
+                <button type="submit" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-emerald-600/30 text-xs transition active:scale-[0.98]">
+                    Register Account
                 </button>
             </form>
 
-            <div class="mt-5 pt-3 border-t border-brand-border text-center text-[11px] text-slate-400 flex items-center justify-center gap-1.5">
-                <i class="fa-solid fa-users text-brand-yellow"></i> Registered Emails: <span id="registeredCountDisplay" class="font-bold text-white">0</span> / 5 allowed
+            <div class="mt-6 pt-4 border-t border-slate-800/80 text-center text-[11px] text-slate-400">
+                Registered Emails Count: <span id="registeredCountDisplay" class="font-bold text-indigo-400">0</span> / 5 allowed
             </div>
         </div>
     </div>
 
     <!-- Application Body -->
-    <div id="appBody" class="hidden flex-1 flex flex-col md:flex-row">
+    <div id="appBody" class="hidden flex-1 flex flex-col md:flex-row min-h-screen relative z-10">
 
         <!-- Sidebar Section -->
-        <aside id="sidebar" class="w-full md:w-80 bg-black text-slate-200 p-5 flex flex-col justify-between shrink-0 border-r border-brand-border shadow-xl">
+        <aside id="sidebar" class="w-full md:w-80 bg-slate-900/90 backdrop-blur-xl border-r border-slate-800/80 text-slate-200 p-6 flex flex-col justify-between shrink-0 shadow-2xl z-20">
             <div class="space-y-6">
-                <!-- App Logo Branding Header -->
-                <div class="border-b border-brand-border pb-4 flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 bg-brand-card rounded-xl border border-brand-yellow/40 p-1 flex items-center justify-center shrink-0">
-                            <img id="sidebarLogo" src="" alt="SP Logo" class="w-full h-full object-contain">
-                        </div>
-                        <div>
-                            <h1 class="text-base font-black tracking-wider text-white">SP CENTRING</h1>
-                            <p class="text-brand-yellow text-[10px] font-bold uppercase tracking-widest flex items-center gap-1">
-                                <i class="fa-solid fa-helmet-safety"></i> Portal Admin
-                            </p>
-                        </div>
+                <!-- App Title -->
+                <div class="border-b border-slate-800/80 pb-5 flex justify-between items-center">
+                    <div>
+                        <h1 class="text-lg font-extrabold tracking-wider text-white">SP <span class="text-yellow-400">CENTRING</span></h1>
+                        <p class="text-yellow-400/80 text-[11px] font-medium">Management & Audit Portal</p>
                     </div>
-                </div>
-
-                <!-- User Badge -->
-                <div class="bg-brand-card p-2.5 rounded-xl border border-brand-border flex items-center justify-between">
-                    <div class="flex items-center gap-2 overflow-hidden">
-                        <div class="w-7 h-7 rounded-lg bg-brand-yellow text-black flex items-center justify-center font-bold text-xs shrink-0">
-                            <i class="fa-solid fa-user-gear"></i>
-                        </div>
-                        <span id="currentUserEmail" class="text-xs text-slate-200 font-medium truncate">user@sp.com</span>
-                    </div>
-                    <span class="inline-flex items-center gap-1 bg-emerald-500/10 text-emerald-400 text-[10px] px-2 py-0.5 rounded border border-emerald-500/20 font-semibold">
-                        <i class="fa-solid fa-circle text-[6px]"></i> Active
+                    <span id="userBadge" class="bg-indigo-950/80 text-indigo-300 px-3 py-1 rounded-full text-[10px] font-semibold border border-indigo-800/60 flex items-center gap-1.5 shadow-inner">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span id="currentUserEmail">user</span>
                     </span>
                 </div>
 
                 <!-- Navigation Module Switcher -->
                 <div class="space-y-2">
-                    <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                        <i class="fa-solid fa-cubes text-brand-yellow"></i> Navigation Modules
-                    </label>
-                    <button id="navWorkerBtn" onclick="switchModule('worker')" class="w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold bg-brand-yellow text-black flex items-center justify-between transition shadow">
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-users-gear text-sm"></i> Worker Attendance</span>
-                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Select Module</label>
+                    <button id="navWorkerBtn" onclick="switchModule('worker')" class="w-full text-left px-4 py-3.5 rounded-2xl text-xs font-semibold nav-active flex items-center justify-between transition-all duration-200">
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-users text-sm"></i>Worker Attendance</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] opacity-70"></i>
                     </button>
-                    <button id="navCentringBtn" onclick="switchModule('centring')" class="w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold bg-brand-card text-slate-300 hover:bg-brand-cardHover hover:text-white flex items-center justify-between border border-brand-border transition">
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-ruler-combined text-sm text-brand-yellow"></i> Centring Work Measures</span>
-                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    <button id="navCentringBtn" onclick="switchModule('centring')" class="w-full text-left px-4 py-3.5 rounded-2xl text-xs font-semibold text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 flex items-center justify-between transition-all duration-200">
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-ruler-combined text-sm"></i>Centring Work Measures</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] opacity-70"></i>
+                    </button>
+                    <button id="navRentalBtn" onclick="switchModule('rental')" class="w-full text-left px-4 py-3.5 rounded-2xl text-xs font-semibold text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 flex items-center justify-between transition-all duration-200">
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-store text-sm"></i>Rental Shops</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] opacity-70"></i>
+                    </button>
+                    <button id="navVehicleBtn" onclick="switchModule('vehicle')" class="w-full text-left px-4 py-3.5 rounded-2xl text-xs font-semibold text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 flex items-center justify-between transition-all duration-200">
+                        <span class="flex items-center gap-3"><i class="fa-solid fa-truck-front text-sm"></i>Vehicle Rent</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] opacity-70"></i>
                     </button>
                 </div>
 
-                <!-- User / Site Filter -->
-                <div class="bg-brand-card p-3.5 rounded-xl border border-brand-border space-y-2.5">
-                    <h3 class="text-xs font-bold text-brand-yellow uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-filter"></i> Filter By Worker / Site
+                <!-- User Specific Filter -->
+                <div class="glass-card p-4 rounded-2xl space-y-3">
+                    <h3 class="text-xs font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-filter text-indigo-400"></i> Active Filter Target
                     </h3>
                     <div>
-                        <select id="userSelectFilter" onchange="applyUserFilter(this.value)" class="w-full px-2.5 py-2 bg-black text-xs text-white border border-brand-border rounded-lg focus:border-brand-yellow outline-none transition">
+                        <select id="userSelectFilter" onchange="applyUserFilter(this.value)" class="w-full px-3 py-2.5 glass-input text-xs rounded-xl outline-none text-slate-200 transition">
                             <option value="">-- All Records --</option>
                         </select>
                     </div>
                 </div>
 
                 <!-- Data Export & Import Section -->
-                <div class="bg-brand-card p-3.5 rounded-xl border border-brand-border space-y-2.5">
-                    <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                        <i class="fa-solid fa-file-invoice text-brand-yellow"></i> Reports & Data Hub
+                <div class="glass-card p-4 rounded-2xl space-y-3">
+                    <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-file-export"></i> Import & Export Data
                     </h3>
-                    <p class="text-[11px] text-slate-400">Export formatted tables with logo header or import existing backups.</p>
+                    <p class="text-[11px] text-slate-400">Export active table records or import external CSV logs.</p>
                     <div class="grid grid-cols-2 gap-2">
-                        <button onclick="exportToPDF()" class="bg-brand-yellow hover:bg-brand-yellowHover text-black font-bold py-2 px-2 rounded-lg text-[11px] transition flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-file-pdf"></i> Export PDF
+                        <button onclick="exportToPDF()" class="bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/30 font-medium py-2 px-2 rounded-xl text-[11px] transition flex items-center justify-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-file-pdf text-emerald-400"></i> Export PDF
                         </button>
-                        <button onclick="exportToCSV()" class="bg-brand-accent hover:bg-stone-800 text-white font-bold py-2 px-2 rounded-lg text-[11px] border border-brand-border transition flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-file-csv text-brand-yellow"></i> Export CSV
+                        <button onclick="exportToCSV()" class="bg-teal-600/20 hover:bg-teal-600 text-teal-300 hover:text-white border border-teal-500/30 font-medium py-2 px-2 rounded-xl text-[11px] transition flex items-center justify-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-file-csv text-teal-400"></i> Export CSV
                         </button>
                     </div>
                     <div class="pt-1">
-                        <label class="w-full bg-black hover:bg-stone-900 text-slate-300 hover:text-white border border-brand-border py-2 px-2 rounded-lg text-[11px] font-semibold cursor-pointer block text-center transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-file-import text-brand-yellow"></i> Import CSV File
+                        <label class="w-full bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 hover:text-white text-center border border-slate-700/80 py-2.5 px-2 rounded-xl text-[11px] cursor-pointer block transition font-medium">
+                            <i class="fa-solid fa-file-import mr-1.5 text-indigo-400"></i> Import CSV File
                             <input type="file" id="csvFileInput" accept=".csv" onchange="importCSVFile(event)" class="hidden">
                         </label>
                     </div>
                 </div>
 
-                <!-- Audit History Button -->
+                <!-- History Audit Action -->
                 <div>
-                    <button onclick="openAuditModal()" class="w-full bg-brand-yellow/10 hover:bg-brand-yellow/20 text-brand-yellow border border-brand-yellow/30 py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-clock-rotate-left"></i> View Audit Logs & History
+                    <button onclick="openAuditModal()" class="w-full bg-slate-800/60 hover:bg-slate-800 text-slate-300 border border-slate-700/60 py-3 px-3 rounded-2xl text-xs font-semibold transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-clock-rotate-left text-amber-400"></i> View Audit Logs
                     </button>
                 </div>
             </div>
 
             <!-- Sidebar Footer -->
-            <div class="pt-4 border-t border-brand-border mt-6">
-                <button onclick="handleLogout()" class="w-full bg-red-950/30 hover:bg-red-600 text-red-400 hover:text-white border border-red-800/40 py-2 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
+            <div class="pt-6 border-t border-slate-800/80 mt-6">
+                <button onclick="handleLogout()" class="w-full bg-red-500/10 hover:bg-red-600 text-red-400 hover:text-white border border-red-500/20 py-3 px-3 rounded-2xl text-xs font-semibold transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-right-from-bracket"></i> Logout Session
                 </button>
             </div>
         </aside>
 
         <!-- Main Workspace Area -->
-        <main class="flex-1 p-4 md:p-6 space-y-6 overflow-y-auto">
+        <main class="flex-1 p-4 md:p-8 space-y-6 overflow-y-auto bg-slate-950/35">
+
+            <!-- SP CENTRING PREMIUM WORKSPACE HEADER -->
+            <header class="sp-topbar animate-fade-in">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="sp-brand-mark shrink-0">
+                        <i class="fa-solid fa-cubes-stacked text-sm"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-sm md:text-base font-extrabold text-white tracking-tight truncate">
+                                SP <span class="text-yellow-400">CENTRING</span> WORKS
+                            </h2>
+                            <span class="hidden sm:inline text-[9px] font-bold text-slate-500 uppercase tracking-[.14em]">Operations Hub</span>
+                        </div>
+                        <p class="text-[10px] md:text-[11px] text-slate-500 mt-0.5">
+                            Centralized project, labour & rental management
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                    <div class="hidden sm:flex sp-live-pill">
+                        <span class="sp-live-dot"></span>
+                        System Active
+                    </div>
+                    <div class="hidden md:block text-right">
+                        <p class="text-[9px] text-slate-500 uppercase tracking-widest font-bold">Workspace</p>
+                        <p class="text-[11px] text-slate-300 font-semibold">Secure Local Session</p>
+                    </div>
+                </div>
+            </header>
+
+            <!-- PREMIUM HERO / PRODUCT BANNER -->
+            <section class="sp-hero animate-fade-in">
+                <div class="sp-hero-content">
+                    <div class="sp-kicker">Project operations • simplified</div>
+                    <h1 class="sp-hero-title">
+                        Run your <span>centring operations</span> with clarity.
+                    </h1>
+                    <p class="sp-hero-copy">
+                        Track worker attendance, centring measurements, rental expenses and vehicle movements
+                        from one focused workspace — with filters, audit history and report exports built in.
+                    </p>
+
+                    <div class="sp-stat-strip">
+                        <div class="sp-stat">
+                            <div class="sp-stat-label"><i class="fa-solid fa-layer-group mr-1"></i> Modules</div>
+                            <div class="sp-stat-value">04 Active</div>
+                        </div>
+                        <div class="sp-stat">
+                            <div class="sp-stat-label"><i class="fa-solid fa-file-shield mr-1"></i> Reports</div>
+                            <div class="sp-stat-value">PDF + CSV</div>
+                        </div>
+                        <div class="sp-stat">
+                            <div class="sp-stat-label"><i class="fa-solid fa-clock-rotate-left mr-1"></i> History</div>
+                            <div class="sp-stat-value">Audit Ready</div>
+                        </div>
+                        <div class="sp-stat">
+                            <div class="sp-stat-label"><i class="fa-solid fa-lock mr-1"></i> Session</div>
+                            <div class="sp-stat-value">Protected</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
             <!-- MODULE 1: Worker Attendance & Payment Portal -->
-            <div id="moduleWorker" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div id="moduleWorker" class="animate-fade-in grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Entry Form -->
-                <div class="lg:col-span-1 bg-brand-card p-5 rounded-2xl border border-brand-border h-fit shadow-xl">
-                    <h2 id="workerFormTitle" class="text-sm font-bold text-white mb-4 border-b border-brand-border pb-3 flex items-center justify-between">
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-user-plus text-brand-yellow"></i> Add Worker Entry</span>
-                        <button id="cancelWorkerEditBtn" onclick="resetWorkerForm()" class="hidden text-xs text-red-400 hover:underline flex items-center gap-1">
-                            <i class="fa-solid fa-xmark"></i> Cancel Edit
-                        </button>
+                <div class="lg:col-span-1 glass-card p-6 rounded-3xl h-fit">
+                    <h2 id="workerFormTitle" class="text-sm font-bold text-slate-200 mb-4 pb-3 border-b border-slate-800/80 flex items-center justify-between">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-plus-circle text-indigo-400 text-base"></i>Add Worker Entry</span>
+                        <button id="cancelWorkerEditBtn" onclick="resetWorkerForm()" class="hidden text-xs text-red-400 hover:underline">Cancel Edit</button>
                     </h2>
 
-                    <form id="workerForm" onsubmit="handleWorkerSubmit(event)" class="space-y-3.5 text-xs">
+                    <form id="workerForm" onsubmit="handleWorkerSubmit(event)" class="space-y-4 text-xs">
                         <input type="hidden" id="workerEditIndex" value="-1">
 
                         <div>
-                            <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-brand-yellow"></i> Site Name</label>
-                            <input type="text" id="workerSiteName" required class="w-full px-3 py-2 bg-black border border-brand-border rounded-lg focus:border-brand-yellow text-white outline-none transition" placeholder="e.g. Site A - Anna Nagar">
+                            <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Site Name</label>
+                            <input type="text" id="workerSiteName" required class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100 placeholder-slate-600" placeholder="e.g. Site A - Anna Nagar">
                         </div>
 
-                        <div class="grid grid-cols-2 gap-2">
+                        <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-user text-brand-yellow"></i> Worker Name</label>
-                                <input type="text" id="workerName" required class="w-full px-3 py-2 bg-black border border-brand-border rounded-lg focus:border-brand-yellow text-white outline-none transition" placeholder="Worker Name">
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Worker Name</label>
+                                <input type="text" id="workerName" required class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100 placeholder-slate-600" placeholder="Worker Name">
                             </div>
                             <div>
-                                <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-phone text-brand-yellow"></i> Phone Number</label>
-                                <input type="tel" id="workerPhone" pattern="[0-9]{10}" class="w-full px-3 py-2 bg-black border border-brand-border rounded-lg focus:border-brand-yellow text-white outline-none transition" placeholder="10-digit Mobile">
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Phone Number</label>
+                                <input type="tel" id="workerPhone" pattern="[0-9]{10}" class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100 placeholder-slate-600" placeholder="10-digit Mobile">
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-2">
+                        <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-briefcase text-brand-yellow"></i> Category</label>
-                                <select id="workerCategory" class="w-full px-3 py-2 bg-black border border-brand-border rounded-lg focus:border-brand-yellow text-white outline-none transition">
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Category / Role</label>
+                                <select id="workerCategory" class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100">
                                     <option value="Centring Worker">Centring Worker</option>
                                     <option value="Mason">Mason</option>
                                     <option value="Carpenter">Carpenter</option>
@@ -257,8 +702,8 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-clock text-brand-yellow"></i> Work Shift</label>
-                                <select id="workerShift" class="w-full px-3 py-2 bg-black border border-brand-border rounded-lg focus:border-brand-yellow text-white outline-none transition">
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Work Shift</label>
+                                <select id="workerShift" class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100">
                                     <option value="Full Day">Full Day</option>
                                     <option value="Half Day">Half Day</option>
                                     <option value="Overtime">Overtime</option>
@@ -266,110 +711,106 @@
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-2">
+                        <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-calendar-day text-brand-yellow"></i> Date</label>
-                                <input type="date" id="workerDate" required onchange="autoFillDay()" class="w-full px-3 py-2 bg-black border border-brand-border rounded-lg focus:border-brand-yellow text-white outline-none transition">
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Date</label>
+                                <input type="date" id="workerDate" required onchange="autoFillDay()" class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100">
                             </div>
                             <div>
-                                <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-calendar-week text-brand-yellow"></i> Day</label>
-                                <input type="text" id="workerDay" readonly class="w-full px-3 py-2 bg-stone-900 border border-brand-border text-slate-400 rounded-lg cursor-not-allowed" placeholder="Day">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-2">
-                            <div>
-                                <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-hourglass-start text-brand-yellow"></i> Time Starts</label>
-                                <input type="time" id="workerTimeStart" class="w-full px-3 py-2 bg-black border border-brand-border rounded-lg focus:border-brand-yellow text-white outline-none transition">
-                            </div>
-                            <div>
-                                <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-hourglass-end text-brand-yellow"></i> Time Out</label>
-                                <input type="time" id="workerTimeOut" class="w-full px-3 py-2 bg-black border border-brand-border rounded-lg focus:border-brand-yellow text-white outline-none transition">
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Day</label>
+                                <input type="text" id="workerDay" readonly class="w-full px-3 py-2.5 bg-slate-900/90 border border-slate-800 text-slate-400 rounded-xl font-medium" placeholder="Day">
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-2">
+                        <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-indian-rupee-sign text-amber-500"></i> Pending (₹)</label>
-                                <input type="number" id="workerPending" min="0" step="any" placeholder="0" class="w-full px-3 py-2 bg-black border border-brand-border rounded-lg focus:border-brand-yellow text-white outline-none transition">
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Time Starts</label>
+                                <input type="time" id="workerTimeStart" class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100">
                             </div>
                             <div>
-                                <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-500"></i> Paid (₹)</label>
-                                <input type="number" id="workerPaid" min="0" step="any" placeholder="0" class="w-full px-3 py-2 bg-black border border-brand-border rounded-lg focus:border-brand-yellow text-white outline-none transition">
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Time Out</label>
+                                <input type="time" id="workerTimeOut" class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100">
                             </div>
                         </div>
 
-                        <button type="submit" id="workerSubmitBtn" class="w-full bg-brand-yellow hover:bg-brand-yellowHover text-black font-bold py-2.5 rounded-lg shadow-lg shadow-brand-yellow/10 transition text-xs flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-floppy-disk"></i> Save Worker Entry
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Pending (₹)</label>
+                                <input type="number" id="workerPending" min="0" step="any" placeholder="0" class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100">
+                            </div>
+                            <div>
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Paid (₹)</label>
+                                <input type="number" id="workerPaid" min="0" step="any" placeholder="0" class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100">
+                            </div>
+                        </div>
+
+                        <button type="submit" id="workerSubmitBtn" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 transition text-xs active:scale-[0.98]">
+                            Save Entry
                         </button>
                     </form>
                 </div>
 
                 <!-- Table Card -->
                 <div class="lg:col-span-2 space-y-4">
-                    <div class="bg-brand-card p-4 rounded-2xl border border-brand-border shadow-xl">
-                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center justify-between">
-                            <span class="flex items-center gap-2"><i class="fa-solid fa-filter text-brand-yellow"></i> Table Filters</span>
-                            <button onclick="resetWorkerFilters()" class="text-brand-yellow hover:underline font-normal text-xs flex items-center gap-1">
-                                <i class="fa-solid fa-rotate-left"></i> Reset Filters
-                            </button>
+                    <div class="glass-card p-4 rounded-3xl">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center justify-between">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-sliders text-indigo-400"></i> Table Filters</span>
+                            <button onclick="resetWorkerFilters()" class="text-indigo-400 hover:underline font-normal text-xs">Reset Filters</button>
                         </h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 text-xs">
+                        <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
                             <div>
-                                <label class="block text-slate-400 mb-1 font-semibold">From Date</label>
-                                <input type="date" id="workerFromDate" onchange="renderWorkerTable()" class="w-full px-2.5 py-1.5 bg-black border border-brand-border rounded-lg text-white outline-none">
+                                <label class="block text-slate-400 mb-1 font-medium">From Date</label>
+                                <input type="date" id="workerFromDate" onchange="renderWorkerTable()" class="w-full px-3 py-2 glass-input rounded-xl outline-none text-slate-200">
                             </div>
                             <div>
-                                <label class="block text-slate-400 mb-1 font-semibold">To Date</label>
-                                <input type="date" id="workerToDate" onchange="renderWorkerTable()" class="w-full px-2.5 py-1.5 bg-black border border-brand-border rounded-lg text-white outline-none">
+                                <label class="block text-slate-400 mb-1 font-medium">To Date</label>
+                                <input type="date" id="workerToDate" onchange="renderWorkerTable()" class="w-full px-3 py-2 glass-input rounded-xl outline-none text-slate-200">
                             </div>
                             <div>
-                                <label class="block text-slate-400 mb-1 font-semibold">Site Name</label>
-                                <input type="text" id="workerSiteFilter" oninput="renderWorkerTable()" placeholder="Filter Site..." class="w-full px-2.5 py-1.5 bg-black border border-brand-border rounded-lg text-white outline-none">
+                                <label class="block text-slate-400 mb-1 font-medium">Site Name</label>
+                                <input type="text" id="workerSiteFilter" oninput="renderWorkerTable()" placeholder="Site..." class="w-full px-3 py-2 glass-input rounded-xl outline-none text-slate-200 placeholder-slate-600">
                             </div>
                             <div>
-                                <label class="block text-slate-400 mb-1 font-semibold">Worker Name</label>
-                                <input type="text" id="workerSearchInput" oninput="renderWorkerTable()" placeholder="Filter Worker..." class="w-full px-2.5 py-1.5 bg-black border border-brand-border rounded-lg text-white outline-none">
+                                <label class="block text-slate-400 mb-1 font-medium">Worker Name</label>
+                                <input type="text" id="workerSearchInput" oninput="renderWorkerTable()" placeholder="Worker..." class="w-full px-3 py-2 glass-input rounded-xl outline-none text-slate-200 placeholder-slate-600">
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-brand-card p-5 rounded-2xl border border-brand-border shadow-xl">
-                        <div class="flex items-center justify-between pb-3 border-b border-brand-border mb-3">
-                            <h2 class="text-sm font-bold text-white flex items-center gap-2">
-                                <i class="fa-solid fa-list-check text-brand-yellow"></i> Daily Log Records
-                            </h2>
-                            <button onclick="clearAllWorkerData()" class="text-xs text-red-400 hover:bg-red-950/40 px-2.5 py-1 rounded border border-red-800/50 flex items-center gap-1.5 transition">
-                                <i class="fa-solid fa-trash-can"></i> Clear All
+                    <div class="glass-card p-6 rounded-3xl">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-800/80 mb-4">
+                            <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2"><i class="fa-solid fa-list-check text-indigo-400"></i>Daily Log Records</h2>
+                            <button onclick="clearAllWorkerData()" class="text-xs text-red-400 hover:bg-red-500/10 px-3 py-1.5 rounded-xl border border-red-500/20 transition">
+                                <i class="fa-solid fa-trash-can mr-1"></i> Clear All
                             </button>
                         </div>
 
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse text-xs">
                                 <thead>
-                                    <tr class="bg-black text-slate-300 font-bold border-b border-brand-border uppercase">
-                                        <th class="p-2.5">S.No</th>
-                                        <th class="p-2.5">Date / Site</th>
-                                        <th class="p-2.5">Worker / Category</th>
-                                        <th class="p-2.5">Shift / Timing</th>
-                                        <th class="p-2.5">Pending</th>
-                                        <th class="p-2.5">Paid</th>
-                                        <th class="p-2.5 text-center">SMS Alert</th>
-                                        <th class="p-2.5 text-center">Actions</th>
+                                    <tr class="border-b border-slate-800/80 text-slate-400 font-semibold bg-slate-950/40">
+                                        <th class="p-3 rounded-l-xl">S.No</th>
+                                        <th class="p-3">Date / Site</th>
+                                        <th class="p-3">Worker / Category</th>
+                                        <th class="p-3">Shift / Timing</th>
+                                        <th class="p-3">Pending</th>
+                                        <th class="p-3">Paid</th>
+                                        <th class="p-3 text-center">SMS Alert</th>
+                                        <th class="p-3 text-center rounded-r-xl">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody id="workerTableBody" class="divide-y divide-brand-border/50"></tbody>
+                                <tbody id="workerTableBody" class="divide-y divide-slate-800/50"></tbody>
                             </table>
                         </div>
 
-                        <div class="mt-4 p-3.5 bg-black rounded-xl border border-brand-border grid grid-cols-2 gap-4 text-center">
-                            <div>
-                                <span class="text-xs text-slate-400 uppercase font-bold flex items-center justify-center gap-1"><i class="fa-solid fa-clock text-amber-500"></i> Total Pending</span>
-                                <p id="totalWorkerPendingDisplay" class="text-base font-black text-amber-400 mt-0.5">₹0</p>
+                        <div class="mt-5 p-4 bg-slate-950/60 rounded-2xl border border-slate-800/80 grid grid-cols-2 gap-4 text-center">
+                            <div class="border-r border-slate-800/80 pr-2">
+                                <span class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Total Pending</span>
+                                <p id="totalWorkerPendingDisplay" class="text-lg font-extrabold text-amber-400 mt-0.5">₹0</p>
                             </div>
                             <div>
-                                <span class="text-xs text-slate-400 uppercase font-bold flex items-center justify-center gap-1"><i class="fa-solid fa-circle-check text-emerald-500"></i> Total Paid</span>
-                                <p id="totalWorkerPaidDisplay" class="text-base font-black text-emerald-400 mt-0.5">₹0</p>
+                                <span class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Total Paid</span>
+                                <p id="totalWorkerPaidDisplay" class="text-lg font-extrabold text-emerald-400 mt-0.5">₹0</p>
                             </div>
                         </div>
                     </div>
@@ -377,121 +818,377 @@
             </div>
 
             <!-- MODULE 2: Centring Work Measurements Module -->
-            <div id="moduleCentring" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div id="moduleCentring" class="animate-fade-in hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Measurement Entry Form -->
-                <div class="lg:col-span-1 bg-brand-card p-5 rounded-2xl border border-brand-border h-fit shadow-xl">
-                    <h2 id="centringFormTitle" class="text-sm font-bold text-white mb-4 border-b border-brand-border pb-3 flex items-center justify-between">
-                        <span class="flex items-center gap-2"><i class="fa-solid fa-ruler-combined text-brand-yellow"></i> Add Measurement Entry</span>
-                        <button id="cancelCentringEditBtn" onclick="resetCentringForm()" class="hidden text-xs text-red-400 hover:underline flex items-center gap-1">
-                            <i class="fa-solid fa-xmark"></i> Cancel Edit
-                        </button>
+                <div class="lg:col-span-1 glass-card p-6 rounded-3xl h-fit">
+                    <h2 id="centringFormTitle" class="text-sm font-bold text-slate-200 mb-4 pb-3 border-b border-slate-800/80 flex items-center justify-between">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-ruler-combined text-indigo-400 text-base"></i>Add Measurement Entry</span>
+                        <button id="cancelCentringEditBtn" onclick="resetCentringForm()" class="hidden text-xs text-red-400 hover:underline">Cancel Edit</button>
                     </h2>
 
-                    <form id="centringForm" onsubmit="handleCentringSubmit(event)" class="space-y-3.5 text-xs">
+                    <form id="centringForm" onsubmit="handleCentringSubmit(event)" class="space-y-4 text-xs">
                         <input type="hidden" id="centringEditIndex" value="-1">
 
                         <div>
-                            <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-building text-brand-yellow"></i> Site Name</label>
-                            <input type="text" id="centringSite" required class="w-full px-3 py-2 bg-black border border-brand-border rounded-lg focus:border-brand-yellow text-white outline-none transition" placeholder="e.g. Site B - Velachery">
+                            <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Site Name</label>
+                            <input type="text" id="centringSite" required class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100 placeholder-slate-600" placeholder="e.g. Site B - Velachery">
                         </div>
 
                         <div>
-                            <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-pen-ruler text-brand-yellow"></i> Work Description</label>
-                            <input type="text" id="centringDesc" required class="w-full px-3 py-2 bg-black border border-brand-border rounded-lg focus:border-brand-yellow text-white outline-none transition" placeholder="e.g. Roof Beam / Slab Work">
+                            <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Description</label>
+                            <input type="text" id="centringDesc" required class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100 placeholder-slate-600" placeholder="e.g. Roof Beam / Slab Work">
                         </div>
 
-                        <div class="grid grid-cols-2 gap-2">
+                        <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-maximize text-brand-yellow"></i> Size / Specs</label>
-                                <input type="text" id="centringSize" class="w-full px-3 py-2 bg-black border border-brand-border rounded-lg focus:border-brand-yellow text-white outline-none transition" placeholder="e.g. 10x12 ft">
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Size (L x W / Specs)</label>
+                                <input type="text" id="centringSize" class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100 placeholder-slate-600" placeholder="e.g. 10x12 ft">
                             </div>
                             <div>
-                                <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-ruler-horizontal text-brand-yellow"></i> Per Feet (ft)</label>
-                                <input type="number" id="centringPerFeet" min="0" step="any" required oninput="calculateCentringTotalFeet()" class="w-full px-3 py-2 bg-black border border-brand-border rounded-lg focus:border-brand-yellow text-white outline-none transition" placeholder="0">
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Per Feet (ft)</label>
+                                <input type="number" id="centringPerFeet" min="0" step="any" required oninput="calculateCentringTotalFeet()" class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100 placeholder-slate-600" placeholder="0">
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-2">
+                        <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-hashtag text-brand-yellow"></i> Numbers (Qty)</label>
-                                <input type="number" id="centringNumbers" min="1" step="1" value="1" required oninput="calculateCentringTotalFeet()" class="w-full px-3 py-2 bg-black border border-brand-border rounded-lg focus:border-brand-yellow text-white outline-none transition">
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Numbers (Qty)</label>
+                                <input type="number" id="centringNumbers" min="1" step="1" value="1" required oninput="calculateCentringTotalFeet()" class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100">
                             </div>
                             <div>
-                                <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-calculator text-brand-yellow"></i> Total Feet (ft)</label>
-                                <input type="number" id="centringTotalFeet" readonly class="w-full px-3 py-2 bg-stone-900 border border-brand-border text-brand-yellow font-bold rounded-lg cursor-not-allowed" placeholder="0">
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Total Feet (ft)</label>
+                                <input type="number" id="centringTotalFeet" readonly class="w-full px-3 py-2.5 bg-slate-900/90 border border-slate-800 text-indigo-400 rounded-xl font-bold" placeholder="0">
                             </div>
                         </div>
 
                         <div>
-                            <label class="block font-semibold uppercase text-slate-400 mb-1 flex items-center gap-1.5"><i class="fa-solid fa-tag text-brand-yellow"></i> Rate Per Feet (₹)</label>
-                            <input type="number" id="centringRate" min="0" step="any" required class="w-full px-3 py-2 bg-black border border-brand-border rounded-lg focus:border-brand-yellow text-white outline-none transition" placeholder="0">
+                            <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Rate Per Feet (₹)</label>
+                            <input type="number" id="centringRate" min="0" step="any" required class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100 placeholder-slate-600" placeholder="0">
                         </div>
 
-                        <button type="submit" id="centringSubmitBtn" class="w-full bg-brand-yellow hover:bg-brand-yellowHover text-black font-bold py-2.5 rounded-lg shadow-lg shadow-brand-yellow/10 transition text-xs flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-floppy-disk"></i> Save Measurement
+                        <button type="submit" id="centringSubmitBtn" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 transition text-xs active:scale-[0.98]">
+                            Save Centring Measurement
                         </button>
                     </form>
                 </div>
 
                 <!-- Centring Data Table -->
                 <div class="lg:col-span-2 space-y-4">
-                    <div class="bg-brand-card p-4 rounded-2xl border border-brand-border shadow-xl">
-                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center justify-between">
-                            <span class="flex items-center gap-2"><i class="fa-solid fa-filter text-brand-yellow"></i> Centring Filters</span>
-                            <button onclick="resetCentringFilters()" class="text-brand-yellow hover:underline font-normal text-xs flex items-center gap-1">
-                                <i class="fa-solid fa-rotate-left"></i> Reset Filters
-                            </button>
+                    <div class="glass-card p-4 rounded-3xl">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center justify-between">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-sliders text-indigo-400"></i> Measurement Filters</span>
+                            <button onclick="resetCentringFilters()" class="text-indigo-400 hover:underline font-normal text-xs">Reset Filters</button>
                         </h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                             <div>
-                                <label class="block text-slate-400 mb-1 font-semibold">Filter Site</label>
-                                <input type="text" id="centringSiteFilter" oninput="renderCentringTable()" placeholder="Site Name..." class="w-full px-2.5 py-1.5 bg-black border border-brand-border rounded-lg text-white outline-none">
+                                <label class="block text-slate-400 mb-1 font-medium">Filter Site</label>
+                                <input type="text" id="centringSiteFilter" oninput="renderCentringTable()" placeholder="Site Name..." class="w-full px-3 py-2 glass-input rounded-xl outline-none text-slate-200 placeholder-slate-600">
                             </div>
                             <div>
-                                <label class="block text-slate-400 mb-1 font-semibold">Filter Description</label>
-                                <input type="text" id="centringDescFilter" oninput="renderCentringTable()" placeholder="Description..." class="w-full px-2.5 py-1.5 bg-black border border-brand-border rounded-lg text-white outline-none">
+                                <label class="block text-slate-400 mb-1 font-medium">Filter Description</label>
+                                <input type="text" id="centringDescFilter" oninput="renderCentringTable()" placeholder="Description..." class="w-full px-3 py-2 glass-input rounded-xl outline-none text-slate-200 placeholder-slate-600">
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-brand-card p-5 rounded-2xl border border-brand-border shadow-xl">
-                        <div class="flex items-center justify-between pb-3 border-b border-brand-border mb-3">
-                            <h2 class="text-sm font-bold text-white flex items-center gap-2">
-                                <i class="fa-solid fa-table-cells text-brand-yellow"></i> Centring Work Measures Log
-                            </h2>
-                            <button onclick="clearAllCentringData()" class="text-xs text-red-400 hover:bg-red-950/40 px-2.5 py-1 rounded border border-red-800/50 flex items-center gap-1.5 transition">
-                                <i class="fa-solid fa-trash-can"></i> Clear All
+                    <div class="glass-card p-6 rounded-3xl">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-800/80 mb-4">
+                            <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2"><i class="fa-solid fa-table text-indigo-400"></i>Centring Work Measures Log</h2>
+                            <button onclick="clearAllCentringData()" class="text-xs text-red-400 hover:bg-red-500/10 px-3 py-1.5 rounded-xl border border-red-500/20 transition">
+                                <i class="fa-solid fa-trash-can mr-1"></i> Clear All
                             </button>
                         </div>
 
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse text-xs">
                                 <thead>
-                                    <tr class="bg-black text-slate-300 font-bold border-b border-brand-border uppercase">
-                                        <th class="p-2.5">S.No</th>
-                                        <th class="p-2.5">Site</th>
-                                        <th class="p-2.5">Description</th>
-                                        <th class="p-2.5">Size</th>
-                                        <th class="p-2.5">Per Feet</th>
-                                        <th class="p-2.5">Numbers</th>
-                                        <th class="p-2.5">Total Feet</th>
-                                        <th class="p-2.5">Rate (₹)</th>
-                                        <th class="p-2.5">Total Cost (₹)</th>
-                                        <th class="p-2.5 text-center">Actions</th>
+                                    <tr class="border-b border-slate-800/80 text-slate-400 font-semibold bg-slate-950/40">
+                                        <th class="p-3 rounded-l-xl">S.No</th>
+                                        <th class="p-3">Site</th>
+                                        <th class="p-3">Description</th>
+                                        <th class="p-3">Size</th>
+                                        <th class="p-3">Per Feet</th>
+                                        <th class="p-3">Numbers</th>
+                                        <th class="p-3">Total Feet</th>
+                                        <th class="p-3">Rate (₹)</th>
+                                        <th class="p-3">Total Cost (₹)</th>
+                                        <th class="p-3 text-center rounded-r-xl">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody id="centringTableBody" class="divide-y divide-brand-border/50"></tbody>
+                                <tbody id="centringTableBody" class="divide-y divide-slate-800/50"></tbody>
                             </table>
                         </div>
 
-                        <div class="mt-4 p-3.5 bg-black rounded-xl border border-brand-border grid grid-cols-2 gap-4 text-center">
-                            <div>
-                                <span class="text-xs text-slate-400 uppercase font-bold flex items-center justify-center gap-1"><i class="fa-solid fa-ruler text-brand-yellow"></i> Total Feet</span>
-                                <p id="totalCentringFeetDisplay" class="text-base font-black text-brand-yellow mt-0.5">0 ft</p>
+                        <div class="mt-5 p-4 bg-slate-950/60 rounded-2xl border border-slate-800/80 grid grid-cols-2 gap-4 text-center">
+                            <div class="border-r border-slate-800/80 pr-2">
+                                <span class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Total Feet</span>
+                                <p id="totalCentringFeetDisplay" class="text-lg font-extrabold text-indigo-400 mt-0.5">0 ft</p>
                             </div>
                             <div>
-                                <span class="text-xs text-slate-400 uppercase font-bold flex items-center justify-center gap-1"><i class="fa-solid fa-sack-dollar text-emerald-500"></i> Total Estimated Amount</span>
-                                <p id="totalCentringCostDisplay" class="text-base font-black text-emerald-400 mt-0.5">₹0</p>
+                                <span class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Total Estimated Amount</span>
+                                <p id="totalCentringCostDisplay" class="text-lg font-extrabold text-emerald-400 mt-0.5">₹0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 3: Rental Shops Module -->
+            <div id="moduleRental" class="animate-fade-in hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Rental Entry Form -->
+                <div class="lg:col-span-1 glass-card p-6 rounded-3xl h-fit">
+                    <h2 id="rentalFormTitle" class="text-sm font-bold text-slate-200 mb-4 pb-3 border-b border-slate-800/80 flex items-center justify-between">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-store text-indigo-400 text-base"></i>Add Rental Shop Entry</span>
+                        <button id="cancelRentalEditBtn" onclick="resetRentalForm()" class="hidden text-xs text-red-400 hover:underline">Cancel Edit</button>
+                    </h2>
+
+                    <form id="rentalForm" onsubmit="handleRentalSubmit(event)" class="space-y-4 text-xs">
+                        <input type="hidden" id="rentalEditIndex" value="-1">
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Date</label>
+                                <input type="date" id="rentalDate" required class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100">
+                            </div>
+                            <div>
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Location / Site</label>
+                                <input type="text" id="rentalLocation" required class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100 placeholder-slate-600" placeholder="e.g. Shop A">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Things / Equipment</label>
+                            <input type="text" id="rentalThings" required class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100 placeholder-slate-600" placeholder="e.g. Scaffolding Pipes">
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Initial Amount Paid (₹)</label>
+                            <input type="number" id="rentalAmountPaid" min="0" step="any" required oninput="calculateRentalTotal()" class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100 placeholder-slate-600" placeholder="0">
+                        </div>
+
+                        <!-- Months 1 to 6 Rent Breakdown -->
+                        <div class="border-t border-slate-800/80 pt-3 mt-3">
+                            <label class="block font-bold text-slate-300 uppercase tracking-wider text-[11px] mb-2">Additional Rent (Months 1 to 6)</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <div>
+                                    <label class="block text-[10px] text-slate-400 font-medium">Month 1 (₹)</label>
+                                    <input type="number" id="rentalM1" min="0" step="any" placeholder="0" oninput="calculateRentalTotal()" class="w-full px-2 py-1.5 glass-input rounded-lg outline-none text-slate-200">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-400 font-medium">Month 2 (₹)</label>
+                                    <input type="number" id="rentalM2" min="0" step="any" placeholder="0" oninput="calculateRentalTotal()" class="w-full px-2 py-1.5 glass-input rounded-lg outline-none text-slate-200">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-400 font-medium">Month 3 (₹)</label>
+                                    <input type="number" id="rentalM3" min="0" step="any" placeholder="0" oninput="calculateRentalTotal()" class="w-full px-2 py-1.5 glass-input rounded-lg outline-none text-slate-200">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-400 font-medium">Month 4 (₹)</label>
+                                    <input type="number" id="rentalM4" min="0" step="any" placeholder="0" oninput="calculateRentalTotal()" class="w-full px-2 py-1.5 glass-input rounded-lg outline-none text-slate-200">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-400 font-medium">Month 5 (₹)</label>
+                                    <input type="number" id="rentalM5" min="0" step="any" placeholder="0" oninput="calculateRentalTotal()" class="w-full px-2 py-1.5 glass-input rounded-lg outline-none text-slate-200">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-400 font-medium">Month 6 (₹)</label>
+                                    <input type="number" id="rentalM6" min="0" step="any" placeholder="0" oninput="calculateRentalTotal()" class="w-full px-2 py-1.5 glass-input rounded-lg outline-none text-slate-200">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Calculated Total Amount (₹)</label>
+                            <input type="number" id="rentalTotalAmount" readonly class="w-full px-3 py-2.5 bg-slate-900/90 border border-slate-800 text-emerald-400 font-bold rounded-xl" placeholder="0">
+                        </div>
+
+                        <button type="submit" id="rentalSubmitBtn" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 transition text-xs active:scale-[0.98]">
+                            Save Rental Shop Entry
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Rental Data Table -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="glass-card p-4 rounded-3xl">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center justify-between">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-sliders text-indigo-400"></i> Rental Shop Filters</span>
+                            <button onclick="resetRentalFilters()" class="text-indigo-400 hover:underline font-normal text-xs">Reset Filters</button>
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                            <div>
+                                <label class="block text-slate-400 mb-1 font-medium">Filter Location</label>
+                                <input type="text" id="rentalLocationFilter" oninput="renderRentalTable()" placeholder="Location..." class="w-full px-3 py-2 glass-input rounded-xl outline-none text-slate-200 placeholder-slate-600">
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1 font-medium">Filter Things / Items</label>
+                                <input type="text" id="rentalThingsFilter" oninput="renderRentalTable()" placeholder="Things..." class="w-full px-3 py-2 glass-input rounded-xl outline-none text-slate-200 placeholder-slate-600">
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1 font-medium">Date Search</label>
+                                <input type="date" id="rentalDateFilter" onchange="renderRentalTable()" class="w-full px-3 py-2 glass-input rounded-xl outline-none text-slate-200">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-3xl">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-800/80 mb-4">
+                            <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2"><i class="fa-solid fa-store text-indigo-400"></i>Rental Shops Log</h2>
+                            <button onclick="clearAllRentalData()" class="text-xs text-red-400 hover:bg-red-500/10 px-3 py-1.5 rounded-xl border border-red-500/20 transition">
+                                <i class="fa-solid fa-trash-can mr-1"></i> Clear All
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="border-b border-slate-800/80 text-slate-400 font-semibold bg-slate-950/40">
+                                        <th class="p-3 rounded-l-xl">S.No</th>
+                                        <th class="p-3">Date</th>
+                                        <th class="p-3">Location</th>
+                                        <th class="p-3">Things</th>
+                                        <th class="p-3">Amount Paid</th>
+                                        <th class="p-3">Additional Rent (M1-M6)</th>
+                                        <th class="p-3">Total Amount</th>
+                                        <th class="p-3 text-center rounded-r-xl">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rentalTableBody" class="divide-y divide-slate-800/50"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-5 p-4 bg-slate-950/60 rounded-2xl border border-slate-800/80 grid grid-cols-2 gap-4 text-center">
+                            <div class="border-r border-slate-800/80 pr-2">
+                                <span class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Total Paid (Initial)</span>
+                                <p id="totalRentalInitialPaidDisplay" class="text-lg font-extrabold text-indigo-400 mt-0.5">₹0</p>
+                            </div>
+                            <div>
+                                <span class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Grand Total Expense</span>
+                                <p id="totalRentalOverallDisplay" class="text-lg font-extrabold text-emerald-400 mt-0.5">₹0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODULE 4: Vehicle Rent Module -->
+            <div id="moduleVehicle" class="animate-fade-in hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Vehicle Entry Form -->
+                <div class="lg:col-span-1 glass-card p-6 rounded-3xl h-fit">
+                    <h2 id="vehicleFormTitle" class="text-sm font-bold text-slate-200 mb-4 pb-3 border-b border-slate-800/80 flex items-center justify-between">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-truck-front text-indigo-400 text-base"></i>Add Vehicle Rent Entry</span>
+                        <button id="cancelVehicleEditBtn" onclick="resetVehicleForm()" class="hidden text-xs text-red-400 hover:underline">Cancel Edit</button>
+                    </h2>
+
+                    <form id="vehicleForm" onsubmit="handleVehicleSubmit(event)" class="space-y-4 text-xs">
+                        <input type="hidden" id="vehicleEditIndex" value="-1">
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Name</label>
+                                <input type="text" id="vehicleName" required class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100 placeholder-slate-600" placeholder="Driver Name">
+                            </div>
+                            <div>
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Vehicle No</label>
+                                <input type="text" id="vehicleNo" required class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100 placeholder-slate-600" placeholder="e.g. TN-01-AB-1234">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Trip From</label>
+                                <input type="text" id="vehicleTripFrom" required class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100 placeholder-slate-600" placeholder="Origin Location">
+                            </div>
+                            <div>
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Trip To</label>
+                                <input type="text" id="vehicleTripTo" required class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100 placeholder-slate-600" placeholder="Destination Location">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Amount Pending (₹)</label>
+                                <input type="number" id="vehicleAmountPending" min="0" step="any" placeholder="0" oninput="calculateVehicleTotal()" class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100">
+                            </div>
+                            <div>
+                                <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Amount Paid (₹)</label>
+                                <input type="number" id="vehicleAmountPaid" min="0" step="any" placeholder="0" oninput="calculateVehicleTotal()" class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold uppercase tracking-wider text-slate-400 mb-1">Total Amount (₹)</label>
+                            <input type="number" id="vehicleTotal" readonly class="w-full px-3 py-2.5 bg-slate-900/90 border border-slate-800 text-indigo-400 font-bold rounded-xl" placeholder="0">
+                        </div>
+
+                        <button type="submit" id="vehicleSubmitBtn" class="w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 transition text-xs active:scale-[0.98]">
+                            Save Vehicle Entry
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Vehicle Data Table -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="glass-card p-4 rounded-3xl">
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center justify-between">
+                            <span class="flex items-center gap-2"><i class="fa-solid fa-sliders text-indigo-400"></i> Vehicle Rent Filters</span>
+                            <button onclick="resetVehicleFilters()" class="text-indigo-400 hover:underline font-normal text-xs">Reset Filters</button>
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                            <div>
+                                <label class="block text-slate-400 mb-1 font-medium">Filter Vehicle No</label>
+                                <input type="text" id="vehicleNoFilter" oninput="renderVehicleTable()" placeholder="Vehicle No..." class="w-full px-3 py-2 glass-input rounded-xl outline-none text-slate-200 placeholder-slate-600">
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1 font-medium">Filter Name</label>
+                                <input type="text" id="vehicleNameFilter" oninput="renderVehicleTable()" placeholder="Driver/Owner..." class="w-full px-3 py-2 glass-input rounded-xl outline-none text-slate-200 placeholder-slate-600">
+                            </div>
+                            <div>
+                                <label class="block text-slate-400 mb-1 font-medium">Filter Route (From/To)</label>
+                                <input type="text" id="vehicleRouteFilter" oninput="renderVehicleTable()" placeholder="Route..." class="w-full px-3 py-2 glass-input rounded-xl outline-none text-slate-200 placeholder-slate-600">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 rounded-3xl">
+                        <div class="flex items-center justify-between pb-3 border-b border-slate-800/80 mb-4">
+                            <h2 class="text-sm font-bold text-slate-200 flex items-center gap-2"><i class="fa-solid fa-truck-front text-indigo-400"></i>Vehicle Rent Log</h2>
+                            <button onclick="clearAllVehicleData()" class="text-xs text-red-400 hover:bg-red-500/10 px-3 py-1.5 rounded-xl border border-red-500/20 transition">
+                                <i class="fa-solid fa-trash-can mr-1"></i> Clear All
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="border-b border-slate-800/80 text-slate-400 font-semibold bg-slate-950/40">
+                                        <th class="p-3 rounded-l-xl">S.No</th>
+                                        <th class="p-3">Name</th>
+                                        <th class="p-3">Vehicle No</th>
+                                        <th class="p-3">Trip From</th>
+                                        <th class="p-3">Trip To</th>
+                                        <th class="p-3">Amount Pending</th>
+                                        <th class="p-3">Amount Paid</th>
+                                        <th class="p-3">Total</th>
+                                        <th class="p-3 text-center rounded-r-xl">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="vehicleTableBody" class="divide-y divide-slate-800/50"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="mt-5 p-4 bg-slate-950/60 rounded-2xl border border-slate-800/80 grid grid-cols-3 gap-4 text-center">
+                            <div class="border-r border-slate-800/80 pr-2">
+                                <span class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Total Pending</span>
+                                <p id="totalVehiclePendingDisplay" class="text-lg font-extrabold text-amber-400 mt-0.5">₹0</p>
+                            </div>
+                            <div class="border-r border-slate-800/80 pr-2">
+                                <span class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Total Paid</span>
+                                <p id="totalVehiclePaidDisplay" class="text-lg font-extrabold text-emerald-400 mt-0.5">₹0</p>
+                            </div>
+                            <div>
+                                <span class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Grand Total Amount</span>
+                                <p id="totalVehicleOverallDisplay" class="text-lg font-extrabold text-indigo-400 mt-0.5">₹0</p>
                             </div>
                         </div>
                     </div>
@@ -501,78 +1198,64 @@
         </main>
     </div>
 
-    <!-- Enhanced Dual-Type History / Audit Modal -->
-    <div id="auditModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4 z-50">
-        <div class="bg-brand-card rounded-2xl shadow-2xl max-w-4xl w-full p-5 max-h-[85vh] flex flex-col border border-brand-border">
-            
-            <!-- Modal Header -->
-            <div class="flex justify-between items-center pb-3 border-b border-brand-border">
-                <h3 class="text-base font-extrabold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-clock-rotate-left text-brand-yellow"></i> Record Audit Logs & History
+    <!-- Audit History Modal -->
+    <div id="auditModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4 z-50 animate-pop-in">
+        <div class="glass-panel bg-slate-900 rounded-3xl max-w-4xl w-full p-6 max-h-[85vh] flex flex-col border border-slate-800">
+            <div class="flex justify-between items-center pb-4 border-b border-slate-800">
+                <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-amber-400 text-base"></i> Record Audit Logs & Restorations
                 </h3>
-                <button onclick="closeAuditModal()" class="text-slate-400 hover:text-white text-lg transition"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-
-            <!-- Dual History Switcher Tabs -->
-            <div class="flex border-b border-brand-border mt-4 text-xs font-bold">
-                <button id="tabAllHistory" onclick="switchHistoryType('all')" class="flex-1 pb-2.5 border-b-2 border-brand-yellow text-brand-yellow text-center transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-layer-group"></i> All History (Global Audit Log)
-                </button>
-                <button id="tabModuleHistory" onclick="switchHistoryType('module')" class="flex-1 pb-2.5 border-b-2 border-transparent text-slate-400 hover:text-white text-center transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-filter"></i> <span id="moduleHistoryTabLabel">Worker Module History</span>
-                </button>
+                <button onclick="closeAuditModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition">&times;</button>
             </div>
             
-            <!-- History Table Content -->
             <div class="overflow-y-auto my-4 flex-1">
                 <table class="w-full text-left border-collapse text-xs">
                     <thead>
-                        <tr class="bg-black text-slate-300 font-bold border-b border-brand-border uppercase">
-                            <th class="p-2.5">Timestamp</th>
-                            <th class="p-2.5">Module / Action</th>
-                            <th class="p-2.5">Details</th>
-                            <th class="p-2.5">User</th>
-                            <th class="p-2.5 text-center">Restore Record</th>
+                        <tr class="border-b border-slate-800 text-slate-400 font-semibold bg-slate-950/40">
+                            <th class="p-3">Timestamp</th>
+                            <th class="p-3">Module / Action</th>
+                            <th class="p-3">Details</th>
+                            <th class="p-3">User</th>
+                            <th class="p-3 text-center">Restore</th>
                         </tr>
                     </thead>
-                    <tbody id="auditTableBody" class="divide-y divide-brand-border/50"></tbody>
+                    <tbody id="auditTableBody" class="divide-y divide-slate-800/60"></tbody>
                 </table>
             </div>
 
-            <!-- Modal Footer -->
-            <div class="pt-3 border-t border-brand-border flex justify-between items-center text-xs text-slate-400">
-                <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-brand-yellow"></i> Records older than 2 years are automatically purged.</span>
-                <button onclick="closeAuditModal()" class="bg-brand-accent hover:bg-stone-800 text-white px-4 py-2 rounded-lg border border-brand-border font-bold transition">Close History</button>
+            <div class="pt-4 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
+                <span>Logs older than 2 years are automatically purged.</span>
+                <button onclick="closeAuditModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 px-5 py-2 rounded-xl font-medium transition">Close</button>
             </div>
         </div>
     </div>
 
     <!-- SMS Confirmation Modal -->
-    <div id="smsModal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden items-center justify-center p-4 z-50">
-        <div class="bg-brand-card rounded-2xl shadow-2xl max-w-md w-full p-5 space-y-4 border border-brand-border">
-            <div class="flex justify-between items-center border-b border-brand-border pb-3">
-                <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-comment-sms text-brand-yellow"></i> Send Payment Notification SMS
+    <div id="smsModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4 z-50 animate-pop-in">
+        <div class="glass-panel bg-slate-900 rounded-3xl max-w-md w-full p-6 space-y-4 border border-slate-800">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h3 class="text-sm font-bold text-slate-100 flex items-center gap-2">
+                    <i class="fa-solid fa-comment-sms text-indigo-400"></i> Send Payment Notification SMS
                 </h3>
-                <button onclick="closeSmsModal()" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeSmsModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition">&times;</button>
             </div>
 
             <input type="hidden" id="smsRecordIndex">
 
             <div class="space-y-3 text-xs">
                 <div>
-                    <label class="block text-slate-400 mb-1 font-semibold flex items-center gap-1.5"><i class="fa-solid fa-mobile-screen text-brand-yellow"></i> Recipient Mobile Number:</label>
-                    <input type="tel" id="smsPhone" class="w-full p-2.5 bg-black border border-brand-border rounded-lg text-white outline-none focus:border-brand-yellow">
+                    <label class="block text-slate-400 mb-1 font-semibold">Recipient Mobile Number:</label>
+                    <input type="tel" id="smsPhone" class="w-full px-3 py-2.5 glass-input rounded-xl outline-none text-slate-100">
                 </div>
                 <div>
-                    <label class="block text-slate-400 mb-1 font-semibold flex items-center gap-1.5"><i class="fa-solid fa-envelope-open-text text-brand-yellow"></i> Message Preview:</label>
-                    <textarea id="smsText" rows="3" class="w-full p-2.5 bg-black border border-brand-border rounded-lg text-slate-200 outline-none focus:border-brand-yellow text-xs"></textarea>
+                    <label class="block text-slate-400 mb-1 font-semibold">Message Preview:</label>
+                    <textarea id="smsText" rows="3" class="w-full p-3 glass-input rounded-xl text-slate-200 outline-none resize-none"></textarea>
                 </div>
             </div>
 
             <div class="flex justify-end gap-2 pt-2">
-                <button onclick="closeSmsModal()" class="px-3.5 py-2 bg-brand-accent hover:bg-stone-800 text-slate-300 rounded-lg text-xs font-bold border border-brand-border">Cancel</button>
-                <button onclick="confirmAndSendSMS()" class="px-3.5 py-2 bg-brand-yellow hover:bg-brand-yellowHover text-black rounded-lg text-xs font-bold flex items-center gap-1.5 transition">
+                <button onclick="closeSmsModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition">Cancel SMS</button>
+                <button onclick="confirmAndSendSMS()" class="px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-lg shadow-emerald-600/20 transition">
                     <i class="fa-solid fa-paper-plane"></i> Send SMS
                 </button>
             </div>
@@ -581,15 +1264,10 @@
 
     <!-- JavaScript Application Logic -->
     <script>
-        // Set Logo Images
-        document.getElementById('authLogo').src = SP_LOGO_SRC;
-        document.getElementById('sidebarLogo').src = SP_LOGO_SRC;
-
         // Authentication & Session
         let registeredUsers = JSON.parse(localStorage.getItem('sp_centring_users')) || [];
         let activeSession = JSON.parse(localStorage.getItem('sp_centring_session')) || null;
-        let activeModule = 'worker'; // 'worker' or 'centring'
-        let activeHistoryType = 'all'; // 'all' or 'module'
+        let activeModule = 'worker'; // 'worker', 'centring', 'rental', or 'vehicle'
 
         function updateRegisteredCount() {
             document.getElementById('registeredCountDisplay').innerText = registeredUsers.length;
@@ -603,13 +1281,13 @@
             if (tab === 'login') {
                 document.getElementById('loginForm').classList.remove('hidden');
                 document.getElementById('signupForm').classList.add('hidden');
-                document.getElementById('tabLogin').className = "flex-1 pb-2 border-b-2 border-brand-yellow text-brand-yellow text-center transition flex items-center justify-center gap-2";
-                document.getElementById('tabSignup').className = "flex-1 pb-2 border-b-2 border-transparent text-slate-400 hover:text-white text-center transition flex items-center justify-center gap-2";
+                document.getElementById('tabLogin').className = "flex-1 py-2.5 rounded-xl text-white bg-indigo-600 shadow-md transition-all duration-200 text-center";
+                document.getElementById('tabSignup').className = "flex-1 py-2.5 rounded-xl text-slate-400 hover:text-white transition-all duration-200 text-center";
             } else {
                 document.getElementById('loginForm').classList.add('hidden');
                 document.getElementById('signupForm').classList.remove('hidden');
-                document.getElementById('tabSignup').className = "flex-1 pb-2 border-b-2 border-brand-yellow text-brand-yellow text-center transition flex items-center justify-center gap-2";
-                document.getElementById('tabLogin').className = "flex-1 pb-2 border-b-2 border-transparent text-slate-400 hover:text-white text-center transition flex items-center justify-center gap-2";
+                document.getElementById('tabSignup').className = "flex-1 py-2.5 rounded-xl text-white bg-emerald-600 shadow-md transition-all duration-200 text-center";
+                document.getElementById('tabLogin').className = "flex-1 py-2.5 rounded-xl text-slate-400 hover:text-white transition-all duration-200 text-center";
             }
         }
 
@@ -624,13 +1302,13 @@
             successDiv.classList.add('hidden');
 
             if (registeredUsers.length >= 5) {
-                errorDiv.querySelector('span').innerText = "Registration closed: Limit of 5 Email IDs reached!";
+                errorDiv.innerText = "Registration closed: Maximum limit of 5 Email IDs reached!";
                 errorDiv.classList.remove('hidden');
                 return;
             }
 
             if (registeredUsers.some(u => u.email === email)) {
-                errorDiv.querySelector('span').innerText = "This email ID is already registered!";
+                errorDiv.innerText = "This email ID is already registered!";
                 errorDiv.classList.remove('hidden');
                 return;
             }
@@ -639,7 +1317,7 @@
             localStorage.setItem('sp_centring_users', JSON.stringify(registeredUsers));
             updateRegisteredCount();
 
-            successDiv.querySelector('span').innerText = "Registration successful! You can now log in.";
+            successDiv.innerText = "Registration successful! You can now log in.";
             successDiv.classList.remove('hidden');
             document.getElementById('signupForm').reset();
         }
@@ -655,7 +1333,7 @@
             const user = registeredUsers.find(u => u.email === email && u.password === password);
 
             if (!user) {
-                errorDiv.querySelector('span').innerText = "Invalid Email or Password!";
+                errorDiv.innerText = "Invalid Email or Password, or user not registered!";
                 errorDiv.classList.remove('hidden');
                 return;
             }
@@ -682,6 +1360,8 @@
                 populateUserFilterDropdown();
                 renderWorkerTable();
                 renderCentringTable();
+                renderRentalTable();
+                renderVehicleTable();
             } else {
                 document.getElementById('authScreen').classList.remove('hidden');
                 document.getElementById('appBody').classList.add('hidden');
@@ -691,16 +1371,31 @@
         // Module Switcher Logic
         function switchModule(moduleName) {
             activeModule = moduleName;
+
+            const inactiveClass = "w-full text-left px-4 py-3.5 rounded-2xl text-xs font-semibold text-slate-400 hover:text-slate-100 hover:bg-slate-800/60 flex items-center justify-between transition-all duration-200";
+            
+            document.getElementById('navWorkerBtn').className = inactiveClass;
+            document.getElementById('navCentringBtn').className = inactiveClass;
+            document.getElementById('navRentalBtn').className = inactiveClass;
+            document.getElementById('navVehicleBtn').className = inactiveClass;
+
+            document.getElementById('moduleWorker').classList.add('hidden');
+            document.getElementById('moduleCentring').classList.add('hidden');
+            document.getElementById('moduleRental').classList.add('hidden');
+            document.getElementById('moduleVehicle').classList.add('hidden');
+
             if (moduleName === 'worker') {
                 document.getElementById('moduleWorker').classList.remove('hidden');
-                document.getElementById('moduleCentring').classList.add('hidden');
-                document.getElementById('navWorkerBtn').className = "w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold bg-brand-yellow text-black flex items-center justify-between transition shadow";
-                document.getElementById('navCentringBtn').className = "w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold bg-brand-card text-slate-300 hover:bg-brand-cardHover hover:text-white flex items-center justify-between border border-brand-border transition";
-            } else {
-                document.getElementById('moduleWorker').classList.add('hidden');
+                document.getElementById('navWorkerBtn').className = "w-full text-left px-4 py-3.5 rounded-2xl text-xs font-semibold nav-active flex items-center justify-between transition-all duration-200";
+            } else if (moduleName === 'centring') {
                 document.getElementById('moduleCentring').classList.remove('hidden');
-                document.getElementById('navCentringBtn').className = "w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold bg-brand-yellow text-black flex items-center justify-between transition shadow";
-                document.getElementById('navWorkerBtn').className = "w-full text-left px-3 py-2.5 rounded-xl text-xs font-bold bg-brand-card text-slate-300 hover:bg-brand-cardHover hover:text-white flex items-center justify-between border border-brand-border transition";
+                document.getElementById('navCentringBtn').className = "w-full text-left px-4 py-3.5 rounded-2xl text-xs font-semibold nav-active flex items-center justify-between transition-all duration-200";
+            } else if (moduleName === 'rental') {
+                document.getElementById('moduleRental').classList.remove('hidden');
+                document.getElementById('navRentalBtn').className = "w-full text-left px-4 py-3.5 rounded-2xl text-xs font-semibold nav-active flex items-center justify-between transition-all duration-200";
+            } else if (moduleName === 'vehicle') {
+                document.getElementById('moduleVehicle').classList.remove('hidden');
+                document.getElementById('navVehicleBtn').className = "w-full text-left px-4 py-3.5 rounded-2xl text-xs font-semibold nav-active flex items-center justify-between transition-all duration-200";
             }
             populateUserFilterDropdown();
         }
@@ -708,6 +1403,8 @@
         // Data Local Storage Repositories
         let workerEntries = JSON.parse(localStorage.getItem('sp_centring_entries')) || [];
         let centringEntries = JSON.parse(localStorage.getItem('sp_centring_measures')) || [];
+        let rentalEntries = JSON.parse(localStorage.getItem('sp_centring_rentals')) || [];
+        let vehicleEntries = JSON.parse(localStorage.getItem('sp_centring_vehicles')) || [];
         let auditLogs = JSON.parse(localStorage.getItem('sp_centring_audit_logs')) || [];
 
         // Auto purge logs older than 2 years
@@ -717,6 +1414,7 @@
 
         // Default Dates
         document.getElementById('workerDate').valueAsDate = new Date();
+        document.getElementById('rentalDate').valueAsDate = new Date();
         autoFillDay();
 
         function autoFillDay() {
@@ -731,6 +1429,8 @@
         function saveToLocalStorage() {
             localStorage.setItem('sp_centring_entries', JSON.stringify(workerEntries));
             localStorage.setItem('sp_centring_measures', JSON.stringify(centringEntries));
+            localStorage.setItem('sp_centring_rentals', JSON.stringify(rentalEntries));
+            localStorage.setItem('sp_centring_vehicles', JSON.stringify(vehicleEntries));
             localStorage.setItem('sp_centring_audit_logs', JSON.stringify(auditLogs));
             populateUserFilterDropdown();
         }
@@ -757,8 +1457,12 @@
             let optionsSet = new Set();
             if (activeModule === 'worker') {
                 workerEntries.forEach(e => { if (e.name) optionsSet.add(e.name); if (e.siteName) optionsSet.add(e.siteName); });
-            } else {
+            } else if (activeModule === 'centring') {
                 centringEntries.forEach(e => { if (e.site) optionsSet.add(e.site); });
+            } else if (activeModule === 'rental') {
+                rentalEntries.forEach(e => { if (e.location) optionsSet.add(e.location); });
+            } else if (activeModule === 'vehicle') {
+                vehicleEntries.forEach(e => { if (e.vehicleNo) optionsSet.add(e.vehicleNo); if (e.name) optionsSet.add(e.name); });
             }
 
             Array.from(optionsSet).sort().forEach(item => {
@@ -774,13 +1478,19 @@
             if (activeModule === 'worker') {
                 document.getElementById('workerSearchInput').value = val;
                 renderWorkerTable();
-            } else {
+            } else if (activeModule === 'centring') {
                 document.getElementById('centringSiteFilter').value = val;
                 renderCentringTable();
+            } else if (activeModule === 'rental') {
+                document.getElementById('rentalLocationFilter').value = val;
+                renderRentalTable();
+            } else if (activeModule === 'vehicle') {
+                document.getElementById('vehicleNoFilter').value = val;
+                renderVehicleTable();
             }
         }
 
-        // WORKER MODULE FUNCTIONS
+        // ================= WORKER MODULE FUNCTIONS =================
         function handleWorkerSubmit(e) {
             e.preventDefault();
             const editIndex = parseInt(document.getElementById('workerEditIndex').value);
@@ -842,7 +1552,7 @@
             const filtered = getFilteredWorkerEntries();
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-500 font-medium"><i class="fa-solid fa-folder-open text-xl mb-1 block"></i>No worker records found</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-500">No worker records found</td></tr>`;
             } else {
                 filtered.forEach((item, index) => {
                     const originalIndex = workerEntries.indexOf(item);
@@ -852,34 +1562,37 @@
                     const smsCount = (item.smsHistory || []).length;
 
                     const tr = document.createElement('tr');
-                    tr.className = "hover:bg-brand-cardHover transition text-slate-200";
+                    tr.className = "hover:bg-slate-800/40 text-slate-200 transition";
                     tr.innerHTML = `
-                        <td class="p-2.5 font-bold text-slate-400">${index + 1}</td>
-                        <td class="p-2.5">
-                            <div class="font-bold text-white flex items-center gap-1.5"><i class="fa-solid fa-calendar-day text-brand-yellow text-[11px]"></i>${item.date} (${item.day.slice(0,3)})</div>
-                            <div class="text-[11px] text-brand-yellow font-semibold flex items-center gap-1"><i class="fa-solid fa-location-dot"></i>${item.siteName}</div>
+                        <td class="p-3 font-semibold text-slate-400">${index + 1}</td>
+                        <td class="p-3">
+                            <div class="font-semibold text-slate-100">${item.date} <span class="text-[10px] text-slate-500 font-normal">(${item.day.slice(0,3)})</span></div>
+                            <div class="text-[11px] text-indigo-400 font-medium">${item.siteName}</div>
                         </td>
-                        <td class="p-2.5">
-                            <div class="font-black text-white text-xs">${item.name}</div>
-                            <div class="text-[11px] text-slate-400 flex items-center gap-1"><i class="fa-solid fa-user-tag text-[10px]"></i>${item.category || 'Centring Worker'} • ${item.phone || 'No Phone'}</div>
+                        <td class="p-3">
+                            <div class="font-bold text-slate-100">${item.name}</div>
+                            <div class="text-[11px] text-slate-400 flex items-center gap-1.5 mt-0.5">
+                                <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px]">${item.category || 'Centring Worker'}</span>
+                                <span>${item.phone || 'No Phone'}</span>
+                            </div>
                         </td>
-                        <td class="p-2.5">
-                            <div class="font-semibold text-slate-200">${item.shift || 'Full Day'}</div>
-                            <div class="text-[11px] text-slate-400">${item.timeStart} - ${item.timeOut}</div>
+                        <td class="p-3">
+                            <div class="font-medium text-slate-300">${item.shift || 'Full Day'}</div>
+                            <div class="text-[11px] text-slate-500">${item.timeStart} - ${item.timeOut}</div>
                         </td>
-                        <td class="p-2.5 font-bold text-amber-400">₹${item.pending.toLocaleString()}</td>
-                        <td class="p-2.5 font-bold text-emerald-400">₹${item.paid.toLocaleString()}</td>
-                        <td class="p-2.5 text-center">
-                            <button onclick="openSmsModal(${originalIndex})" class="bg-brand-yellow/10 hover:bg-brand-yellow/20 text-brand-yellow border border-brand-yellow/30 px-2 py-1 rounded-lg text-[11px] font-bold inline-flex items-center gap-1 transition">
-                                <i class="fa-solid fa-comment-sms"></i> Send ${smsCount > 0 ? `(${smsCount})` : ''}
+                        <td class="p-3 font-bold text-amber-400">₹${item.pending.toLocaleString()}</td>
+                        <td class="p-3 font-bold text-emerald-400">₹${item.paid.toLocaleString()}</td>
+                        <td class="p-3 text-center">
+                            <button onclick="openSmsModal(${originalIndex})" class="bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2.5 py-1.5 rounded-xl text-[11px] font-medium inline-flex items-center gap-1.5 transition">
+                                <i class="fa-solid fa-comment-sms"></i> Send SMS ${smsCount > 0 ? `<span class="bg-indigo-500 text-white rounded-full w-4 h-4 text-[9px] flex items-center justify-center">${smsCount}</span>` : ''}
                             </button>
                         </td>
-                        <td class="p-2.5 text-center space-x-1">
-                            <button onclick="editWorkerEntry(${originalIndex})" class="text-brand-yellow hover:bg-brand-yellow/10 p-1.5 rounded-lg transition" title="Edit">
+                        <td class="p-3 text-center space-x-1">
+                            <button onclick="editWorkerEntry(${originalIndex})" class="text-indigo-400 hover:bg-indigo-500/20 p-2 rounded-xl transition" title="Edit">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </button>
-                            <button onclick="deleteWorkerEntry(${originalIndex})" class="text-red-400 hover:bg-red-950/40 p-1.5 rounded-lg transition" title="Delete">
-                                <i class="fa-solid fa-trash-can"></i>
+                            <button onclick="deleteWorkerEntry(${originalIndex})" class="text-red-400 hover:bg-red-500/20 p-2 rounded-xl transition" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
                             </button>
                         </td>
                     `;
@@ -906,9 +1619,9 @@
             document.getElementById('workerPending').value = item.pending;
             document.getElementById('workerPaid').value = item.paid;
 
-            document.getElementById('workerFormTitle').children[0].innerHTML = `<i class="fa-solid fa-pen-to-square text-brand-yellow"></i> Edit Worker Entry #${index + 1}`;
-            document.getElementById('workerSubmitBtn').innerHTML = '<i class="fa-solid fa-check"></i> Update Worker Entry';
-            document.getElementById('workerSubmitBtn').className = 'w-full bg-white hover:bg-slate-200 text-black font-bold py-2.5 rounded-lg shadow transition text-xs flex items-center justify-center gap-2';
+            document.getElementById('workerFormTitle').children[0].innerHTML = `<i class="fa-solid fa-pen-to-square text-amber-400 text-base"></i>Edit Worker Entry #${index + 1}`;
+            document.getElementById('workerSubmitBtn').innerText = 'Update Entry';
+            document.getElementById('workerSubmitBtn').className = 'w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-amber-600/30 transition text-xs active:scale-[0.98]';
             document.getElementById('cancelWorkerEditBtn').classList.remove('hidden');
         }
 
@@ -918,9 +1631,9 @@
             document.getElementById('workerDate').valueAsDate = new Date();
             autoFillDay();
 
-            document.getElementById('workerFormTitle').children[0].innerHTML = `<i class="fa-solid fa-user-plus text-brand-yellow"></i> Add Worker Entry`;
-            document.getElementById('workerSubmitBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Worker Entry';
-            document.getElementById('workerSubmitBtn').className = 'w-full bg-brand-yellow hover:bg-brand-yellowHover text-black font-bold py-2.5 rounded-lg shadow-lg shadow-brand-yellow/10 transition text-xs flex items-center justify-center gap-2';
+            document.getElementById('workerFormTitle').children[0].innerHTML = `<i class="fa-solid fa-plus-circle text-indigo-400 text-base"></i>Add Worker Entry`;
+            document.getElementById('workerSubmitBtn').innerText = 'Save Entry';
+            document.getElementById('workerSubmitBtn').className = 'w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 transition text-xs active:scale-[0.98]';
             document.getElementById('cancelWorkerEditBtn').classList.add('hidden');
         }
 
@@ -952,7 +1665,7 @@
             }
         }
 
-        // CENTRING MODULE FUNCTIONS
+        // ================= CENTRING MODULE FUNCTIONS =================
         function calculateCentringTotalFeet() {
             const perFeet = parseFloat(document.getElementById('centringPerFeet').value) || 0;
             const numbers = parseInt(document.getElementById('centringNumbers').value) || 1;
@@ -1014,7 +1727,7 @@
             const filtered = getFilteredCentringEntries();
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-6 text-slate-500 font-medium"><i class="fa-solid fa-folder-open text-xl mb-1 block"></i>No centring work records found</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="10" class="text-center py-8 text-slate-500">No centring work records found</td></tr>`;
             } else {
                 filtered.forEach((item, index) => {
                     const originalIndex = centringEntries.indexOf(item);
@@ -1022,23 +1735,23 @@
                     grandTotalCost += item.totalCost;
 
                     const tr = document.createElement('tr');
-                    tr.className = "hover:bg-brand-cardHover transition text-slate-200";
+                    tr.className = "hover:bg-slate-800/40 text-slate-200 transition";
                     tr.innerHTML = `
-                        <td class="p-2.5 font-bold text-slate-400">${index + 1}</td>
-                        <td class="p-2.5 font-black text-brand-yellow flex items-center gap-1"><i class="fa-solid fa-building text-[11px]"></i>${item.site}</td>
-                        <td class="p-2.5 text-white font-medium">${item.desc}</td>
-                        <td class="p-2.5 text-slate-400 font-mono">${item.size}</td>
-                        <td class="p-2.5">${item.perFeet} ft</td>
-                        <td class="p-2.5">${item.numbers}</td>
-                        <td class="p-2.5 font-bold text-white">${item.totalFeet.toFixed(2)} ft</td>
-                        <td class="p-2.5">₹${item.rate.toLocaleString()}</td>
-                        <td class="p-2.5 font-black text-emerald-400">₹${item.totalCost.toLocaleString()}</td>
-                        <td class="p-2.5 text-center space-x-1">
-                            <button onclick="editCentringEntry(${originalIndex})" class="text-brand-yellow hover:bg-brand-yellow/10 p-1.5 rounded-lg transition" title="Edit">
+                        <td class="p-3 font-semibold text-slate-400">${index + 1}</td>
+                        <td class="p-3 font-bold text-indigo-400">${item.site}</td>
+                        <td class="p-3 font-medium text-slate-200">${item.desc}</td>
+                        <td class="p-3 text-slate-400">${item.size}</td>
+                        <td class="p-3">${item.perFeet} ft</td>
+                        <td class="p-3">${item.numbers}</td>
+                        <td class="p-3 font-semibold text-slate-100">${item.totalFeet.toFixed(2)} ft</td>
+                        <td class="p-3">₹${item.rate.toLocaleString()}</td>
+                        <td class="p-3 font-bold text-emerald-400">₹${item.totalCost.toLocaleString()}</td>
+                        <td class="p-3 text-center space-x-1">
+                            <button onclick="editCentringEntry(${originalIndex})" class="text-indigo-400 hover:bg-indigo-500/20 p-2 rounded-xl transition" title="Edit">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </button>
-                            <button onclick="deleteCentringEntry(${originalIndex})" class="text-red-400 hover:bg-red-950/40 p-1.5 rounded-lg transition" title="Delete">
-                                <i class="fa-solid fa-trash-can"></i>
+                            <button onclick="deleteCentringEntry(${originalIndex})" class="text-red-400 hover:bg-red-500/20 p-2 rounded-xl transition" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
                             </button>
                         </td>
                     `;
@@ -1061,9 +1774,9 @@
             document.getElementById('centringTotalFeet').value = item.totalFeet;
             document.getElementById('centringRate').value = item.rate;
 
-            document.getElementById('centringFormTitle').children[0].innerHTML = `<i class="fa-solid fa-pen-to-square text-brand-yellow"></i> Edit Measurement Entry #${index + 1}`;
-            document.getElementById('centringSubmitBtn').innerHTML = '<i class="fa-solid fa-check"></i> Update Measurement';
-            document.getElementById('centringSubmitBtn').className = 'w-full bg-white hover:bg-slate-200 text-black font-bold py-2.5 rounded-lg shadow transition text-xs flex items-center justify-center gap-2';
+            document.getElementById('centringFormTitle').children[0].innerHTML = `<i class="fa-solid fa-pen-to-square text-amber-400 text-base"></i>Edit Centring Entry #${index + 1}`;
+            document.getElementById('centringSubmitBtn').innerText = 'Update Measurement';
+            document.getElementById('centringSubmitBtn').className = 'w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-amber-600/30 transition text-xs active:scale-[0.98]';
             document.getElementById('cancelCentringEditBtn').classList.remove('hidden');
         }
 
@@ -1072,9 +1785,9 @@
             document.getElementById('centringForm').reset();
             document.getElementById('centringNumbers').value = 1;
 
-            document.getElementById('centringFormTitle').children[0].innerHTML = `<i class="fa-solid fa-ruler-combined text-brand-yellow"></i> Add Measurement Entry`;
-            document.getElementById('centringSubmitBtn').innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save Measurement';
-            document.getElementById('centringSubmitBtn').className = 'w-full bg-brand-yellow hover:bg-brand-yellowHover text-black font-bold py-2.5 rounded-lg shadow-lg shadow-brand-yellow/10 transition text-xs flex items-center justify-center gap-2';
+            document.getElementById('centringFormTitle').children[0].innerHTML = `<i class="fa-solid fa-ruler-combined text-indigo-400 text-base"></i>Add Measurement Entry`;
+            document.getElementById('centringSubmitBtn').innerText = 'Save Centring Measurement';
+            document.getElementById('centringSubmitBtn').className = 'w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 transition text-xs active:scale-[0.98]';
             document.getElementById('cancelCentringEditBtn').classList.add('hidden');
         }
 
@@ -1104,148 +1817,421 @@
             }
         }
 
-        // IMPORT & EXPORT LOGIC
-        function exportToCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,";
+        // ================= RENTAL SHOPS MODULE FUNCTIONS =================
+        function calculateRentalTotal() {
+            const amountPaid = parseFloat(document.getElementById('rentalAmountPaid').value) || 0;
+            const m1 = parseFloat(document.getElementById('rentalM1').value) || 0;
+            const m2 = parseFloat(document.getElementById('rentalM2').value) || 0;
+            const m3 = parseFloat(document.getElementById('rentalM3').value) || 0;
+            const m4 = parseFloat(document.getElementById('rentalM4').value) || 0;
+            const m5 = parseFloat(document.getElementById('rentalM5').value) || 0;
+            const m6 = parseFloat(document.getElementById('rentalM6').value) || 0;
 
-            if (activeModule === 'worker') {
-                const filtered = getFilteredWorkerEntries();
-                if (filtered.length === 0) return alert("No worker data to export!");
-                csvContent += "S.No,Date,Day,Site Name,Worker Name,Phone,Category,Shift,Time Start,Time Out,Pending Amount,Paid Amount\n";
-                filtered.forEach((item, index) => {
-                    csvContent += [index + 1, `"${item.date}"`, `"${item.day}"`, `"${item.siteName || ''}"`, `"${item.name}"`, `"${item.phone || ''}"`, `"${item.category || ''}"`, `"${item.shift || ''}"`, `"${item.timeStart}"`, `"${item.timeOut}"`, item.pending, item.paid].join(",") + "\n";
-                });
-            } else {
-                const filtered = getFilteredCentringEntries();
-                if (filtered.length === 0) return alert("No centring data to export!");
-                csvContent += "S.No,Site,Description,Size,Per Feet,Numbers,Total Feet,Rate,Total Cost\n";
-                filtered.forEach((item, index) => {
-                    csvContent += [index + 1, `"${item.site}"`, `"${item.desc}"`, `"${item.size}"`, item.perFeet, item.numbers, item.totalFeet, item.rate, item.totalCost].join(",") + "\n";
-                });
-            }
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", `SP_Centring_${activeModule.toUpperCase()}_Export_${new Date().toISOString().slice(0,10)}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            const total = amountPaid + m1 + m2 + m3 + m4 + m5 + m6;
+            document.getElementById('rentalTotalAmount').value = total.toFixed(2);
         }
 
-        function exportToPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF({ orientation: 'landscape' });
+        function handleRentalSubmit(e) {
+            e.preventDefault();
+            const editIndex = parseInt(document.getElementById('rentalEditIndex').value);
 
-            // Brand Header Banner
-            doc.setFillColor(18, 18, 18);
-            doc.rect(0, 0, 297, 28, 'F');
+            const amountPaid = parseFloat(document.getElementById('rentalAmountPaid').value) || 0;
+            const m1 = parseFloat(document.getElementById('rentalM1').value) || 0;
+            const m2 = parseFloat(document.getElementById('rentalM2').value) || 0;
+            const m3 = parseFloat(document.getElementById('rentalM3').value) || 0;
+            const m4 = parseFloat(document.getElementById('rentalM4').value) || 0;
+            const m5 = parseFloat(document.getElementById('rentalM5').value) || 0;
+            const m6 = parseFloat(document.getElementById('rentalM6').value) || 0;
+            const totalAmount = amountPaid + m1 + m2 + m3 + m4 + m5 + m6;
 
-            doc.setFontSize(16);
-            doc.setTextColor(255, 193, 7);
-            
-            if (activeModule === 'worker') {
-                const filtered = getFilteredWorkerEntries();
-                if (filtered.length === 0) return alert("No data to export!");
-                doc.text("SP CENTRING WORKS - WORKER ATTENDANCE REPORT", 14, 15);
-                doc.setFontSize(9);
-                doc.setTextColor(255, 255, 255);
-                doc.text(`Generated Date: ${new Date().toLocaleDateString()} | Author: ${activeSession ? activeSession.email : 'Admin'}`, 14, 22);
-
-                const tableColumn = ["S.No", "Date", "Site Name", "Worker Name", "Category", "Shift", "Pending (₹)", "Paid (₹)"];
-                const tableRows = filtered.map((item, index) => [index + 1, item.date, item.siteName || '-', item.name, item.category, item.shift, item.pending, item.paid]);
-
-                doc.autoTable({ head: [tableColumn], body: tableRows, startY: 32, theme: 'striped', headStyles: { fillColor: [255, 193, 7], textColor: [0,0,0] } });
-            } else {
-                const filtered = getFilteredCentringEntries();
-                if (filtered.length === 0) return alert("No data to export!");
-                doc.text("SP CENTRING WORKS - MEASUREMENTS REPORT", 14, 15);
-                doc.setFontSize(9);
-                doc.setTextColor(255, 255, 255);
-                doc.text(`Generated Date: ${new Date().toLocaleDateString()} | Author: ${activeSession ? activeSession.email : 'Admin'}`, 14, 22);
-
-                const tableColumn = ["S.No", "Site", "Description", "Size", "Per Feet", "Numbers", "Total Feet", "Rate (₹)", "Total Cost (₹)"];
-                const tableRows = filtered.map((item, index) => [index + 1, item.site, item.desc, item.size, item.perFeet, item.numbers, item.totalFeet, item.rate, item.totalCost]);
-
-                doc.autoTable({ head: [tableColumn], body: tableRows, startY: 32, theme: 'striped', headStyles: { fillColor: [255, 193, 7], textColor: [0,0,0] } });
-            }
-
-            doc.save(`SP_Centring_${activeModule.toUpperCase()}_Report_${new Date().toISOString().slice(0,10)}.pdf`);
-        }
-
-        function importCSVFile(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const text = e.target.result;
-                const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-                if (lines.length <= 1) return alert("Invalid CSV format or file is empty!");
-
-                let importedCount = 0;
-
-                if (activeModule === 'worker') {
-                    for (let i = 1; i < lines.length; i++) {
-                        const cols = lines[i].split(',').map(c => c.replace(/^"|"$/g, '').trim());
-                        if (cols.length >= 5) {
-                            workerEntries.push({
-                                id: 'REC_' + Date.now() + '_' + i,
-                                date: cols[1] || new Date().toISOString().slice(0,10),
-                                day: cols[2] || 'Monday',
-                                siteName: cols[3] || 'Imported Site',
-                                name: cols[4] || 'Worker',
-                                phone: cols[5] || '',
-                                category: cols[6] || 'Centring Worker',
-                                shift: cols[7] || 'Full Day',
-                                timeStart: cols[8] || '-',
-                                timeOut: cols[9] || '-',
-                                pending: parseFloat(cols[10]) || 0,
-                                paid: parseFloat(cols[11]) || 0
-                            });
-                            importedCount++;
-                        }
-                    }
-                    renderWorkerTable();
-                } else {
-                    for (let i = 1; i < lines.length; i++) {
-                        const cols = lines[i].split(',').map(c => c.replace(/^"|"$/g, '').trim());
-                        if (cols.length >= 4) {
-                            const perFeet = parseFloat(cols[4]) || 0;
-                            const numbers = parseInt(cols[5]) || 1;
-                            const totalFeet = perFeet * numbers;
-                            const rate = parseFloat(cols[7]) || 0;
-
-                            centringEntries.push({
-                                id: 'CTR_' + Date.now() + '_' + i,
-                                site: cols[1] || 'Imported Site',
-                                desc: cols[2] || 'Centring Work',
-                                size: cols[3] || '-',
-                                perFeet: perFeet,
-                                numbers: numbers,
-                                totalFeet: totalFeet,
-                                rate: rate,
-                                totalCost: totalFeet * rate
-                            });
-                            importedCount++;
-                        }
-                    }
-                    renderCentringTable();
-                }
-
-                saveToLocalStorage();
-                alert(`Successfully imported ${importedCount} records into ${activeModule.toUpperCase()} module!`);
-                event.target.value = '';
+            const newEntry = {
+                id: editIndex === -1 ? 'RNT_' + Date.now() : rentalEntries[editIndex].id,
+                date: document.getElementById('rentalDate').value,
+                location: document.getElementById('rentalLocation').value.trim(),
+                things: document.getElementById('rentalThings').value.trim(),
+                amountPaid: amountPaid,
+                m1: m1, m2: m2, m3: m3, m4: m4, m5: m5, m6: m6,
+                totalAmount: totalAmount
             };
-            reader.readAsText(file);
+
+            if (editIndex === -1) {
+                rentalEntries.push(newEntry);
+                addAuditLog('ADDED', newEntry, 'Rental Shops', false);
+            } else {
+                addAuditLog('EDITED', newEntry, 'Rental Shops', false);
+                rentalEntries[editIndex] = newEntry;
+            }
+
+            saveToLocalStorage();
+            resetRentalForm();
+            renderRentalTable();
         }
 
-        // SMS & DUAL HISTORY AUDIT LOGIC
-        function openSmsModal(index) {
-            const item = workerEntries[index];
-            document.getElementById('smsRecordIndex').value = index;
-            document.getElementById('smsPhone').value = item.phone || '';
-            document.getElementById('smsText').value = `Hello ${item.name}, payment of ₹${item.paid || 0} processed for site ${item.siteName || 'SP Centring'}. Balance Pending: ₹${item.pending || 0}.`;
+        function getFilteredRentalEntries() {
+            const locationFilter = document.getElementById('rentalLocationFilter').value.toLowerCase();
+            const thingsFilter = document.getElementById('rentalThingsFilter').value.toLowerCase();
+            const dateFilter = document.getElementById('rentalDateFilter').value;
+
+            return rentalEntries.filter(item => {
+                const matchesLocation = (item.location || '').toLowerCase().includes(locationFilter);
+                const matchesThings = (item.things || '').toLowerCase().includes(thingsFilter);
+                const matchesDate = !dateFilter || item.date === dateFilter;
+                return matchesLocation && matchesThings && matchesDate;
+            });
+        }
+
+        function renderRentalTable() {
+            const tbody = document.getElementById('rentalTableBody');
+            tbody.innerHTML = '';
+
+            let grandTotalPaid = 0;
+            let grandTotalOverall = 0;
+
+            const filtered = getFilteredRentalEntries();
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-500">No rental shop records found</td></tr>`;
+            } else {
+                filtered.forEach((item, index) => {
+                    const originalIndex = rentalEntries.indexOf(item);
+                    grandTotalPaid += item.amountPaid;
+                    grandTotalOverall += item.totalAmount;
+
+                    const additionalRentSum = item.m1 + item.m2 + item.m3 + item.m4 + item.m5 + item.m6;
+
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-800/40 text-slate-200 transition";
+                    tr.innerHTML = `
+                        <td class="p-3 font-semibold text-slate-400">${index + 1}</td>
+                        <td class="p-3 font-medium text-slate-100">${item.date}</td>
+                        <td class="p-3 font-bold text-indigo-400">${item.location}</td>
+                        <td class="p-3 text-slate-300">${item.things}</td>
+                        <td class="p-3 font-semibold text-slate-100">₹${item.amountPaid.toLocaleString()}</td>
+                        <td class="p-3">
+                            <div class="font-semibold text-amber-400">₹${additionalRentSum.toLocaleString()}</div>
+                            <div class="text-[10px] text-slate-500">M1: ${item.m1} | M2: ${item.m2} | M3: ${item.m3} | M4: ${item.m4} | M5: ${item.m5} | M6: ${item.m6}</div>
+                        </td>
+                        <td class="p-3 font-bold text-emerald-400">₹${item.totalAmount.toLocaleString()}</td>
+                        <td class="p-3 text-center space-x-1">
+                            <button onclick="editRentalEntry(${originalIndex})" class="text-indigo-400 hover:bg-indigo-500/20 p-2 rounded-xl transition" title="Edit">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="deleteRentalEntry(${originalIndex})" class="text-red-400 hover:bg-red-500/20 p-2 rounded-xl transition" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            document.getElementById('totalRentalInitialPaidDisplay').innerText = `₹${grandTotalPaid.toLocaleString()}`;
+            document.getElementById('totalRentalOverallDisplay').innerText = `₹${grandTotalOverall.toLocaleString()}`;
+        }
+
+        function editRentalEntry(index) {
+            const item = rentalEntries[index];
+            document.getElementById('rentalEditIndex').value = index;
+            document.getElementById('rentalDate').value = item.date;
+            document.getElementById('rentalLocation').value = item.location;
+            document.getElementById('rentalThings').value = item.things;
+            document.getElementById('rentalAmountPaid').value = item.amountPaid;
+            document.getElementById('rentalM1').value = item.m1 || 0;
+            document.getElementById('rentalM2').value = item.m2 || 0;
+            document.getElementById('rentalM3').value = item.m3 || 0;
+            document.getElementById('rentalM4').value = item.m4 || 0;
+            document.getElementById('rentalM5').value = item.m5 || 0;
+            document.getElementById('rentalM6').value = item.m6 || 0;
+            document.getElementById('rentalTotalAmount').value = item.totalAmount;
+
+            document.getElementById('rentalFormTitle').children[0].innerHTML = `<i class="fa-solid fa-pen-to-square text-amber-400 text-base"></i>Edit Rental Entry #${index + 1}`;
+            document.getElementById('rentalSubmitBtn').innerText = 'Update Rental Entry';
+            document.getElementById('rentalSubmitBtn').className = 'w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-amber-600/30 transition text-xs active:scale-[0.98]';
+            document.getElementById('cancelRentalEditBtn').classList.remove('hidden');
+        }
+
+        function resetRentalForm() {
+            document.getElementById('rentalEditIndex').value = -1;
+            document.getElementById('rentalForm').reset();
+            document.getElementById('rentalDate').valueAsDate = new Date();
+
+            document.getElementById('rentalFormTitle').children[0].innerHTML = `<i class="fa-solid fa-store text-indigo-400 text-base"></i>Add Rental Shop Entry`;
+            document.getElementById('rentalSubmitBtn').innerText = 'Save Rental Shop Entry';
+            document.getElementById('rentalSubmitBtn').className = 'w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 transition text-xs active:scale-[0.98]';
+            document.getElementById('cancelRentalEditBtn').classList.add('hidden');
+        }
+
+        function resetRentalFilters() {
+            document.getElementById('rentalLocationFilter').value = '';
+            document.getElementById('rentalThingsFilter').value = '';
+            document.getElementById('rentalDateFilter').value = '';
+            renderRentalTable();
+        }
+
+        function deleteRentalEntry(index) {
+            if (confirm("Delete this rental record? You can restore it anytime from Audit Logs.")) {
+                const deleted = rentalEntries[index];
+                addAuditLog('DELETED', deleted, 'Rental Shops', true);
+                rentalEntries.splice(index, 1);
+                saveToLocalStorage();
+                renderRentalTable();
+            }
+        }
+
+        function clearAllRentalData() {
+            if (rentalEntries.length === 0) return;
+            if (confirm("Delete ALL active rental records?")) {
+                rentalEntries.forEach(item => addAuditLog('DELETED', item, 'Rental Shops', true));
+                rentalEntries = [];
+                saveToLocalStorage();
+                renderRentalTable();
+            }
+        }
+
+        // ================= VEHICLE RENT MODULE FUNCTIONS =================
+        function calculateVehicleTotal() {
+            const pending = parseFloat(document.getElementById('vehicleAmountPending').value) || 0;
+            const paid = parseFloat(document.getElementById('vehicleAmountPaid').value) || 0;
+            document.getElementById('vehicleTotal').value = (pending + paid).toFixed(2);
+        }
+
+        function handleVehicleSubmit(e) {
+            e.preventDefault();
+            const editIndex = parseInt(document.getElementById('vehicleEditIndex').value);
+
+            const pending = parseFloat(document.getElementById('vehicleAmountPending').value) || 0;
+            const paid = parseFloat(document.getElementById('vehicleAmountPaid').value) || 0;
+            const total = pending + paid;
+
+            const newEntry = {
+                id: editIndex === -1 ? 'VEH_' + Date.now() : vehicleEntries[editIndex].id,
+                name: document.getElementById('vehicleName').value.trim(),
+                vehicleNo: document.getElementById('vehicleNo').value.trim(),
+                tripFrom: document.getElementById('vehicleTripFrom').value.trim(),
+                tripTo: document.getElementById('vehicleTripTo').value.trim(),
+                amountPending: pending,
+                amountPaid: paid,
+                total: total
+            };
+
+            if (editIndex === -1) {
+                vehicleEntries.push(newEntry);
+                addAuditLog('ADDED', newEntry, 'Vehicle Rent', false);
+            } else {
+                addAuditLog('EDITED', newEntry, 'Vehicle Rent', false);
+                vehicleEntries[editIndex] = newEntry;
+            }
+
+            saveToLocalStorage();
+            resetVehicleForm();
+            renderVehicleTable();
+        }
+
+        function getFilteredVehicleEntries() {
+            const noFilter = document.getElementById('vehicleNoFilter').value.toLowerCase();
+            const nameFilter = document.getElementById('vehicleNameFilter').value.toLowerCase();
+            const routeFilter = document.getElementById('vehicleRouteFilter').value.toLowerCase();
+
+            return vehicleEntries.filter(item => {
+                const matchesNo = (item.vehicleNo || '').toLowerCase().includes(noFilter);
+                const matchesName = (item.name || '').toLowerCase().includes(nameFilter);
+                const matchesRoute = (item.tripFrom || '').toLowerCase().includes(routeFilter) || (item.tripTo || '').toLowerCase().includes(routeFilter);
+                return matchesNo && matchesName && matchesRoute;
+            });
+        }
+
+        function renderVehicleTable() {
+            const tbody = document.getElementById('vehicleTableBody');
+            tbody.innerHTML = '';
+
+            let totalPending = 0;
+            let totalPaid = 0;
+            let grandTotal = 0;
+
+            const filtered = getFilteredVehicleEntries();
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-500">No vehicle rent records found</td></tr>`;
+            } else {
+                filtered.forEach((item, index) => {
+                    const originalIndex = vehicleEntries.indexOf(item);
+                    totalPending += item.amountPending;
+                    totalPaid += item.amountPaid;
+                    grandTotal += item.total;
+
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-800/40 text-slate-200 transition";
+                    tr.innerHTML = `
+                        <td class="p-3 font-semibold text-slate-400">${index + 1}</td>
+                        <td class="p-3 font-bold text-slate-100">${item.name}</td>
+                        <td class="p-3 font-bold text-indigo-400">${item.vehicleNo}</td>
+                        <td class="p-3 text-slate-300">${item.tripFrom}</td>
+                        <td class="p-3 text-slate-300">${item.tripTo}</td>
+                        <td class="p-3 font-bold text-amber-400">₹${item.amountPending.toLocaleString()}</td>
+                        <td class="p-3 font-bold text-emerald-400">₹${item.amountPaid.toLocaleString()}</td>
+                        <td class="p-3 font-bold text-indigo-300">₹${item.total.toLocaleString()}</td>
+                        <td class="p-3 text-center space-x-1">
+                            <button onclick="editVehicleEntry(${originalIndex})" class="text-indigo-400 hover:bg-indigo-500/20 p-2 rounded-xl transition" title="Edit">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="deleteVehicleEntry(${originalIndex})" class="text-red-400 hover:bg-red-500/20 p-2 rounded-xl transition" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            document.getElementById('totalVehiclePendingDisplay').innerText = `₹${totalPending.toLocaleString()}`;
+            document.getElementById('totalVehiclePaidDisplay').innerText = `₹${totalPaid.toLocaleString()}`;
+            document.getElementById('totalVehicleOverallDisplay').innerText = `₹${grandTotal.toLocaleString()}`;
+        }
+
+        function editVehicleEntry(index) {
+            const item = vehicleEntries[index];
+            document.getElementById('vehicleEditIndex').value = index;
+            document.getElementById('vehicleName').value = item.name;
+            document.getElementById('vehicleNo').value = item.vehicleNo;
+            document.getElementById('vehicleTripFrom').value = item.tripFrom;
+            document.getElementById('vehicleTripTo').value = item.tripTo;
+            document.getElementById('vehicleAmountPending').value = item.amountPending;
+            document.getElementById('vehicleAmountPaid').value = item.amountPaid;
+            document.getElementById('vehicleTotal').value = item.total;
+
+            document.getElementById('vehicleFormTitle').children[0].innerHTML = `<i class="fa-solid fa-pen-to-square text-amber-400 text-base"></i>Edit Vehicle Entry #${index + 1}`;
+            document.getElementById('vehicleSubmitBtn').innerText = 'Update Vehicle Entry';
+            document.getElementById('vehicleSubmitBtn').className = 'w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-amber-600/30 transition text-xs active:scale-[0.98]';
+            document.getElementById('cancelVehicleEditBtn').classList.remove('hidden');
+        }
+
+        function resetVehicleForm() {
+            document.getElementById('vehicleEditIndex').value = -1;
+            document.getElementById('vehicleForm').reset();
+
+            document.getElementById('vehicleFormTitle').children[0].innerHTML = `<i class="fa-solid fa-truck-front text-indigo-400 text-base"></i>Add Vehicle Rent Entry`;
+            document.getElementById('vehicleSubmitBtn').innerText = 'Save Vehicle Entry';
+            document.getElementById('vehicleSubmitBtn').className = 'w-full bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-indigo-600/30 transition text-xs active:scale-[0.98]';
+            document.getElementById('cancelVehicleEditBtn').classList.add('hidden');
+        }
+
+        function resetVehicleFilters() {
+            document.getElementById('vehicleNoFilter').value = '';
+            document.getElementById('vehicleNameFilter').value = '';
+            document.getElementById('vehicleRouteFilter').value = '';
+            renderVehicleTable();
+        }
+
+        function deleteVehicleEntry(index) {
+            if (confirm("Delete this vehicle rent record? You can restore it anytime from Audit Logs.")) {
+                const deleted = vehicleEntries[index];
+                addAuditLog('DELETED', deleted, 'Vehicle Rent', true);
+                vehicleEntries.splice(index, 1);
+                saveToLocalStorage();
+                renderVehicleTable();
+            }
+        }
+
+        function clearAllVehicleData() {
+            if (vehicleEntries.length === 0) return;
+            if (confirm("Delete ALL active vehicle rent records?")) {
+                vehicleEntries.forEach(item => addAuditLog('DELETED', item, 'Vehicle Rent', true));
+                vehicleEntries = [];
+                saveToLocalStorage();
+                renderVehicleTable();
+            }
+        }
+
+        // ================= AUDIT LOGS MODAL & RESTORE =================
+        function openAuditModal() {
+            renderAuditLogs();
+            document.getElementById('auditModal').classList.remove('hidden');
+            document.getElementById('auditModal').classList.add('flex');
+        }
+
+        function closeAuditModal() {
+            document.getElementById('auditModal').classList.add('hidden');
+            document.getElementById('auditModal').classList.remove('flex');
+        }
+
+        function renderAuditLogs() {
+            const tbody = document.getElementById('auditTableBody');
+            tbody.innerHTML = '';
+
+            if (auditLogs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-slate-500">No audit logs available</td></tr>`;
+                return;
+            }
+
+            auditLogs.forEach((log) => {
+                const dateStr = new Date(log.timestamp).toLocaleString();
+                let actionBadge = '';
+
+                if (log.action === 'ADDED') actionBadge = '<span class="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px] font-bold">ADDED</span>';
+                else if (log.action === 'EDITED') actionBadge = '<span class="px-2 py-0.5 rounded-full bg-indigo-950 text-indigo-400 border border-indigo-800 text-[10px] font-bold">EDITED</span>';
+                else if (log.action === 'DELETED') actionBadge = '<span class="px-2 py-0.5 rounded-full bg-red-950 text-red-400 border border-red-800 text-[10px] font-bold">DELETED</span>';
+                else if (log.action === 'RESTORED') actionBadge = '<span class="px-2 py-0.5 rounded-full bg-amber-950 text-amber-400 border border-amber-800 text-[10px] font-bold">RESTORED</span>';
+
+                let detailsText = '';
+                if (log.module === 'Worker Attendance') detailsText = `${log.data.name} (${log.data.siteName || 'No Site'}) - Paid: ₹${log.data.paid}`;
+                else if (log.module === 'Centring Work') detailsText = `${log.data.site} - ${log.data.desc} (${log.data.totalFeet} ft)`;
+                else if (log.module === 'Rental Shops') detailsText = `${log.data.location} - ${log.data.things} (₹${log.data.totalAmount})`;
+                else if (log.module === 'Vehicle Rent') detailsText = `${log.data.name} (${log.data.vehicleNo}) - ${log.data.tripFrom} to ${log.data.tripTo}`;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-800/40 text-slate-300 transition";
+                tr.innerHTML = `
+                    <td class="p-3 text-[11px] text-slate-400">${dateStr}</td>
+                    <td class="p-3">
+                        <div class="font-bold text-slate-200">${log.module}</div>
+                        <div class="mt-0.5">${actionBadge}</div>
+                    </td>
+                    <td class="p-3 text-slate-300 font-medium">${detailsText}</td>
+                    <td class="p-3 text-slate-400 text-[11px]">${log.user}</td>
+                    <td class="p-3 text-center">
+                        ${log.restorable && log.action === 'DELETED' ? `
+                            <button onclick="restoreRecord('${log.id}')" class="bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-xl text-[11px] font-medium transition inline-flex items-center gap-1">
+                                <i class="fa-solid fa-rotate-left"></i> Restore
+                            </button>
+                        ` : '<span class="text-slate-600 text-[11px]">-</span>'}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function restoreRecord(logId) {
+            const logIndex = auditLogs.findIndex(l => l.id === logId);
+            if (logIndex === -1) return;
+
+            const log = auditLogs[logIndex];
+            log.restorable = false;
+
+            if (log.module === 'Worker Attendance') {
+                workerEntries.push(log.data);
+                renderWorkerTable();
+            } else if (log.module === 'Centring Work') {
+                centringEntries.push(log.data);
+                renderCentringTable();
+            } else if (log.module === 'Rental Shops') {
+                rentalEntries.push(log.data);
+                renderRentalTable();
+            } else if (log.module === 'Vehicle Rent') {
+                vehicleEntries.push(log.data);
+                renderVehicleTable();
+            }
+
+            addAuditLog('RESTORED', log.data, log.module, false);
+            saveToLocalStorage();
+            renderAuditLogs();
+        }
+
+        // ================= SMS NOTIFICATION MODAL =================
+        function openSmsModal(workerIndex) {
+            const record = workerEntries[workerIndex];
+            document.getElementById('smsRecordIndex').value = workerIndex;
+            document.getElementById('smsPhone').value = record.phone || '';
+            document.getElementById('smsText').value = `Hello ${record.name}, SP Centring Works update for ${record.date} at ${record.siteName}: Paid ₹${record.paid}, Pending Balance ₹${record.pending}. Thank you!`;
 
             document.getElementById('smsModal').classList.remove('hidden');
             document.getElementById('smsModal').classList.add('flex');
@@ -1259,115 +2245,202 @@
         function confirmAndSendSMS() {
             const index = parseInt(document.getElementById('smsRecordIndex').value);
             const phone = document.getElementById('smsPhone').value.trim();
-            const message = document.getElementById('smsText').value;
+            const text = document.getElementById('smsText').value.trim();
 
-            if (!phone) return alert("Please enter a mobile number!");
-
-            if (!workerEntries[index].smsHistory) workerEntries[index].smsHistory = [];
-            workerEntries[index].smsHistory.push({ sentAt: new Date().toISOString(), phone, text: message });
-
-            addAuditLog('SMS_SENT', { worker: workerEntries[index].name, phone, message }, 'Worker Attendance', false);
-            saveToLocalStorage();
-
-            window.location.href = `sms:${phone}?body=${encodeURIComponent(message)}`;
-            closeSmsModal();
-            renderWorkerTable();
-        }
-
-        function openAuditModal() {
-            activeHistoryType = 'all';
-            switchHistoryType('all');
-            document.getElementById('auditModal').classList.remove('hidden');
-            document.getElementById('auditModal').classList.add('flex');
-        }
-
-        function closeAuditModal() {
-            document.getElementById('auditModal').classList.add('hidden');
-            document.getElementById('auditModal').classList.remove('flex');
-        }
-
-        function switchHistoryType(type) {
-            activeHistoryType = type;
-            const activeModuleName = activeModule === 'worker' ? 'Worker Module' : 'Centring Module';
-            document.getElementById('moduleHistoryTabLabel').innerText = `${activeModuleName} History`;
-
-            if (type === 'all') {
-                document.getElementById('tabAllHistory').className = "flex-1 pb-2.5 border-b-2 border-brand-yellow text-brand-yellow text-center transition flex items-center justify-center gap-2";
-                document.getElementById('tabModuleHistory').className = "flex-1 pb-2.5 border-b-2 border-transparent text-slate-400 hover:text-white text-center transition flex items-center justify-center gap-2";
-            } else {
-                document.getElementById('tabModuleHistory').className = "flex-1 pb-2.5 border-b-2 border-brand-yellow text-brand-yellow text-center transition flex items-center justify-center gap-2";
-                document.getElementById('tabAllHistory').className = "flex-1 pb-2.5 border-b-2 border-transparent text-slate-400 hover:text-white text-center transition flex items-center justify-center gap-2";
-            }
-
-            renderAuditTable();
-        }
-
-        function renderAuditTable() {
-            const tbody = document.getElementById('auditTableBody');
-            tbody.innerHTML = '';
-
-            let logsToDisplay = auditLogs;
-            if (activeHistoryType === 'module') {
-                const targetModuleName = activeModule === 'worker' ? 'Worker Attendance' : 'Centring Work';
-                logsToDisplay = auditLogs.filter(log => log.module === targetModuleName);
-            }
-
-            if (logsToDisplay.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-500 font-medium"><i class="fa-solid fa-clock-rotate-left text-xl mb-1 block"></i>No history records found</td></tr>`;
+            if (!phone) {
+                alert("Please enter a valid mobile number!");
                 return;
             }
 
-            logsToDisplay.forEach((log) => {
-                const dateStr = new Date(log.timestamp).toLocaleString();
-                let badgeClass = "bg-stone-800 text-slate-300 border border-brand-border";
-                if (log.action === 'ADDED') badgeClass = "bg-emerald-950/60 text-emerald-400 border border-emerald-800/50";
-                if (log.action === 'DELETED') badgeClass = "bg-red-950/60 text-red-400 border border-red-800/50";
-                if (log.action === 'EDITED') badgeClass = "bg-amber-950/60 text-amber-400 border border-amber-800/50";
-                if (log.action === 'SMS_SENT') badgeClass = "bg-brand-yellow/10 text-brand-yellow border border-brand-yellow/30";
-
-                const data = log.data || {};
-
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-brand-cardHover transition text-slate-200";
-                tr.innerHTML = `
-                    <td class="p-2.5 text-slate-400 font-mono text-[11px]">${dateStr}</td>
-                    <td class="p-2.5">
-                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${badgeClass}">${log.action}</span>
-                        <div class="text-[10px] text-brand-yellow font-semibold mt-1">${log.module || 'Worker'}</div>
-                    </td>
-                    <td class="p-2.5">
-                        <div class="font-bold text-white text-xs">${data.name || data.site || data.worker || 'Record'}</div>
-                        <div class="text-[11px] text-slate-400">${data.siteName || data.desc || data.message || ''}</div>
-                    </td>
-                    <td class="p-2.5 text-slate-300 font-medium">${log.user}</td>
-                    <td class="p-2.5 text-center">
-                        ${log.restorable ? `<button onclick="restoreRecord('${log.id}')" class="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-lg text-[11px] font-bold transition flex items-center justify-center gap-1 mx-auto"><i class="fa-solid fa-rotate-left"></i>Restore</button>` : `<span class="text-slate-600">-</span>`}
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function restoreRecord(logId) {
-            const log = auditLogs.find(l => l.id === logId);
-            if (log && log.data) {
-                if (log.module === 'Centring Work') {
-                    centringEntries.push(log.data);
-                    renderCentringTable();
-                } else {
-                    workerEntries.push(log.data);
-                    renderWorkerTable();
-                }
-                log.restorable = false;
-                addAuditLog('RESTORED', log.data, log.module, false);
+            if (index !== -1 && workerEntries[index]) {
+                if (!workerEntries[index].smsHistory) workerEntries[index].smsHistory = [];
+                workerEntries[index].smsHistory.push({
+                    timestamp: new Date().toISOString(),
+                    phone: phone,
+                    message: text
+                });
                 saveToLocalStorage();
-                renderAuditTable();
-                alert(`Record restored successfully!`);
+                renderWorkerTable();
             }
+
+            // Trigger device native SMS app
+            window.location.href = `sms:${phone}?body=${encodeURIComponent(text)}`;
+            closeSmsModal();
         }
 
-        // Initialize Application
-        checkSessionAndInitialize();
+        // ================= IMPORT & EXPORT LOGIC =================
+        function exportToCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            let filename = `SP_Centring_${activeModule}_${new Date().toISOString().slice(0,10)}.csv`;
+
+            if (activeModule === 'worker') {
+                csvContent += "ID,Site Name,Worker Name,Phone,Category,Shift,Date,Day,Time Start,Time Out,Pending,Paid\n";
+                workerEntries.forEach(e => {
+                    csvContent += `"${e.id}","${e.siteName}","${e.name}","${e.phone}","${e.category}","${e.shift}","${e.date}","${e.day}","${e.timeStart}","${e.timeOut}",${e.pending},${e.paid}\n`;
+                });
+            } else if (activeModule === 'centring') {
+                csvContent += "ID,Site,Description,Size,Per Feet,Numbers,Total Feet,Rate,Total Cost\n";
+                centringEntries.forEach(e => {
+                    csvContent += `"${e.id}","${e.site}","${e.desc}","${e.size}",${e.perFeet},${e.numbers},${e.totalFeet},${e.rate},${e.totalCost}\n`;
+                });
+            } else if (activeModule === 'rental') {
+                csvContent += "ID,Date,Location,Things,Amount Paid,M1,M2,M3,M4,M5,M6,Total Amount\n";
+                rentalEntries.forEach(e => {
+                    csvContent += `"${e.id}","${e.date}","${e.location}","${e.things}",${e.amountPaid},${e.m1},${e.m2},${e.m3},${e.m4},${e.m5},${e.m6},${e.totalAmount}\n`;
+                });
+            } else if (activeModule === 'vehicle') {
+                csvContent += "ID,Name,Vehicle No,Trip From,Trip To,Amount Pending,Amount Paid,Total\n";
+                vehicleEntries.forEach(e => {
+                    csvContent += `"${e.id}","${e.name}","${e.vehicleNo}","${e.tripFrom}","${e.tripTo}",${e.amountPending},${e.amountPaid},${e.total}\n`;
+                });
+            }
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(16);
+            doc.text(`SP CENTRING WORKS - ${activeModule.toUpperCase()} REPORT`, 14, 15);
+            doc.setFontSize(10);
+            doc.text(`Generated on: ${new Date().toLocaleString()}`, 14, 22);
+
+            let head = [];
+            let body = [];
+
+            if (activeModule === 'worker') {
+                head = [['S.No', 'Date', 'Site', 'Worker Name', 'Category', 'Pending (INR)', 'Paid (INR)']];
+                getFilteredWorkerEntries().forEach((e, i) => {
+                    body.push([i + 1, e.date, e.siteName, e.name, e.category, e.pending, e.paid]);
+                });
+            } else if (activeModule === 'centring') {
+                head = [['S.No', 'Site', 'Description', 'Size', 'Total Feet', 'Rate', 'Total Cost (INR)']];
+                getFilteredCentringEntries().forEach((e, i) => {
+                    body.push([i + 1, e.site, e.desc, e.size, `${e.totalFeet} ft`, e.rate, e.totalCost]);
+                });
+            } else if (activeModule === 'rental') {
+                head = [['S.No', 'Date', 'Location', 'Things', 'Initial Paid', 'Total Expense (INR)']];
+                getFilteredRentalEntries().forEach((e, i) => {
+                    body.push([i + 1, e.date, e.location, e.things, e.amountPaid, e.totalAmount]);
+                });
+            } else if (activeModule === 'vehicle') {
+                head = [['S.No', 'Name', 'Vehicle No', 'Route', 'Pending', 'Paid', 'Total (INR)']];
+                getFilteredVehicleEntries().forEach((e, i) => {
+                    body.push([i + 1, e.name, e.vehicleNo, `${e.tripFrom} -> ${e.tripTo}`, e.amountPending, e.amountPaid, e.total]);
+                });
+            }
+
+            doc.autoTable({
+                startY: 28,
+                head: head,
+                body: body,
+                theme: 'striped',
+                headStyles: { fillColor: [79, 70, 229] }
+            });
+
+            doc.save(`SP_Centring_${activeModule}_Report.pdf`);
+        }
+
+        function importCSVFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+                if (lines.length <= 1) return;
+
+                let importedCount = 0;
+
+                for (let i = 1; i < lines.length; i++) {
+                    const cols = lines[i].split(',').map(c => c.replace(/^"|"$/g, ''));
+
+                    if (activeModule === 'worker' && cols.length >= 12) {
+                        workerEntries.push({
+                            id: cols[0] || 'REC_' + Date.now(),
+                            siteName: cols[1],
+                            name: cols[2],
+                            phone: cols[3],
+                            category: cols[4],
+                            shift: cols[5],
+                            date: cols[6],
+                            day: cols[7],
+                            timeStart: cols[8],
+                            timeOut: cols[9],
+                            pending: parseFloat(cols[10]) || 0,
+                            paid: parseFloat(cols[11]) || 0,
+                            smsHistory: []
+                        });
+                        importedCount++;
+                    } else if (activeModule === 'centring' && cols.length >= 9) {
+                        centringEntries.push({
+                            id: cols[0] || 'CTR_' + Date.now(),
+                            site: cols[1],
+                            desc: cols[2],
+                            size: cols[3],
+                            perFeet: parseFloat(cols[4]) || 0,
+                            numbers: parseInt(cols[5]) || 1,
+                            totalFeet: parseFloat(cols[6]) || 0,
+                            rate: parseFloat(cols[7]) || 0,
+                            totalCost: parseFloat(cols[8]) || 0
+                        });
+                        importedCount++;
+                    } else if (activeModule === 'rental' && cols.length >= 12) {
+                        rentalEntries.push({
+                            id: cols[0] || 'RNT_' + Date.now(),
+                            date: cols[1],
+                            location: cols[2],
+                            things: cols[3],
+                            amountPaid: parseFloat(cols[4]) || 0,
+                            m1: parseFloat(cols[5]) || 0,
+                            m2: parseFloat(cols[6]) || 0,
+                            m3: parseFloat(cols[7]) || 0,
+                            m4: parseFloat(cols[8]) || 0,
+                            m5: parseFloat(cols[9]) || 0,
+                            m6: parseFloat(cols[10]) || 0,
+                            totalAmount: parseFloat(cols[11]) || 0
+                        });
+                        importedCount++;
+                    } else if (activeModule === 'vehicle' && cols.length >= 8) {
+                        vehicleEntries.push({
+                            id: cols[0] || 'VEH_' + Date.now(),
+                            name: cols[1],
+                            vehicleNo: cols[2],
+                            tripFrom: cols[3],
+                            tripTo: cols[4],
+                            amountPending: parseFloat(cols[5]) || 0,
+                            amountPaid: parseFloat(cols[6]) || 0,
+                            total: parseFloat(cols[7]) || 0
+                        });
+                        importedCount++;
+                    }
+                }
+
+                saveToLocalStorage();
+                if (activeModule === 'worker') renderWorkerTable();
+                else if (activeModule === 'centring') renderCentringTable();
+                else if (activeModule === 'rental') renderRentalTable();
+                else if (activeModule === 'vehicle') renderVehicleTable();
+
+                alert(`Successfully imported ${importedCount} records into ${activeModule.toUpperCase()} module!`);
+                event.target.value = '';
+            };
+            reader.readAsText(file);
+        }
+
+        // Initialize App Session on Load
+        window.addEventListener('DOMContentLoaded', () => {
+            checkSessionAndInitialize();
+        });
     </script>
 </body>
 </html>
